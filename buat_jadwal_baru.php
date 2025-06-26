@@ -1,8 +1,7 @@
 <?php
 $page_title = 'Buat Jadwal Baru';
 require 'includes/header.php';
-// buat_jadwal_baru.php
-session_start();
+
 if (!isset($_SESSION['user_id']) || !isset($_SESSION['active_program_id'])) {
     header('Location: login.php');
     exit();
@@ -34,7 +33,9 @@ $stmt->close();
     <div class="main-container">
         <div class="form-container">
             <h1>Buat Jadwal Baru</h1>
-            <form action="php/schedule_handler.php" method="POST">
+            <form action="php/schedule_handler.php" method="POST" id="jadwalForm">
+                <input type="hidden" name="action" value="create">
+                <input type="hidden" name="is_routine" id="is_routine_hidden" value="0">
                 <div class="form-group">
                     <label for="agenda_name">Nama agenda:</label>
                     <input type="text" id="agenda_name" name="agenda_name" required>
@@ -93,6 +94,11 @@ $stmt->close();
     </div>
 
     <script src="js/jadwal_form.js"></script>
+    <script>
+    document.getElementById('is_routine').addEventListener('change', function() {
+        document.getElementById('is_routine_hidden').value = this.checked ? '1' : '0';
+    });
+    </script>
 </body>
 </html>
 <?php

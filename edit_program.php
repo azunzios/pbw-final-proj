@@ -21,7 +21,7 @@ $stmt_members->bind_param("i", $program_id);
 $stmt_members->execute();
 $members = $stmt_members->get_result()->fetch_all(MYSQLI_ASSOC);
 ?>
-
+<div class="form-container">
 <h2>Pengaturan: <?php echo htmlspecialchars($program['program_name']); ?></h2>
 
 <form action="php/program_handler.php" method="POST">
@@ -67,6 +67,7 @@ $members = $stmt_members->get_result()->fetch_all(MYSQLI_ASSOC);
         <input type="hidden" name="program_id" value="<?php echo $program['id']; ?>">
         <button type="submit" class="btn btn-danger">Hapus Program Ini</button>
     </form>
+</div>
 </div>
 
 <?php

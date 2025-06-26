@@ -12,6 +12,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action'])) {
     $program_id = $_SESSION['active_program_id'];
     $name = $_POST['name'];
     $notes = $_POST['notes'];
+    $jenis = $_POST['jenis'] ?? null;
+    $jenis_lain = $_POST['jenis_lain'] ?? null;
+    $gender = $_POST['gender'] ?? null;
     
     // Fungsi untuk handle upload foto
     function handle_photo_upload($file_input_name) {
@@ -30,10 +33,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action'])) {
     // --- LOGIKA CREATE ---
     if ($_POST['action'] == 'create') {
         $photo_path = handle_photo_upload('photo');
-        
-        $stmt = $conn->prepare("INSERT INTO pets (program_id, name, notes, photo_path) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("isss", $program_id, $name, $notes, $photo_path);
-        
+        $stmt = $conn->prepare("INSERT INTO pets (program_id, name, notes, photo_path, jenis, jenis_lain, gender) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("issssss", $program_id, $name, $notes, $photo_path, $jenis, $jenis_lain, $gender);
         if ($stmt->execute()) {
             header('Location: ../lihat_peliharaan.php');
         } else {
@@ -45,22 +46,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action'])) {
     // --- LOGIKA UPDATE ---
     if ($_POST['action'] == 'update') {
         $pet_id = (int)$_POST['pet_id'];
-        
-        // Cek apakah ada foto baru yang diupload
         $new_photo_path = handle_photo_upload('photo');
-        
         if ($new_photo_path) {
-            // Jika ada foto baru, update path fotonya
-            $stmt = $conn->prepare("UPDATE pets SET name = ?, notes = ?, photo_path = ? WHERE id = ?");
-            $stmt->bind_param("sssi", $name, $notes, $new_photo_path, $pet_id);
+            $stmt = $conn->prepare("UPDATE pets SET name = ?, notes = ?, photo_path = ?, jenis = ?, jenis_lain = ?, gender = ? WHERE id = ?");
+            $stmt->bind_param("ssssssi", $name, $notes, $new_photo_path, $jenis, $jenis_lain, $gender, $pet_id);
         } else {
-            // Jika tidak ada foto baru, jangan update kolom photo_path
-            $stmt = $conn->prepare("UPDATE pets SET name = ?, notes = ? WHERE id = ?");
-            $stmt->bind_param("ssi", $name, $notes, $pet_id);
+            $stmt = $conn->prepare("UPDATE pets SET name = ?, notes = ?, jenis = ?, jenis_lain = ?, gender = ? WHERE id = ?");
+            $stmt->bind_param("sssssi", $name, $notes, $jenis, $jenis_lain, $gender, $pet_id);
         }
-        
         if ($stmt->execute()) {
             header('Location: ../manajemen_pet.php?id=' . $pet_id . '&success=1');
+        } else {
+            echo "Error: " . $stmt->error;
+        }
+        $stmt->close();
+    }
+
+    // --- LOGIKA DELETE ---
+    if ($_POST['action'] == 'delete') {
+        $pet_id = (int)$_POST['pet_id'];
+        $stmt = $conn->prepare("DELETE FROM pets WHERE id = ?");
+        $stmt->bind_param("i", $pet_id);
+        if ($stmt->execute()) {
+            header('Location: ../lihat_peliharaan.php');
         } else {
             echo "Error: " . $stmt->error;
         }

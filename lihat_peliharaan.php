@@ -14,7 +14,7 @@ $result = $stmt->get_result();
 $pets = $result->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 ?>
-
+<div class="content-container">
 <h2>Lihat atau Atur Peliharaan</h2>
 
 <div class="form-group">
@@ -37,6 +37,7 @@ $stmt->close();
 </div>
 <div class="form-link">
     <p><a href="index.php">&laquo; Kembali ke Beranda</a></p>
+</div>
 </div>
     
 <script>

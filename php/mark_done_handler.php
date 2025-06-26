@@ -45,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['schedule_id'])) {
     
     if ($stmt->execute()) {
         // Berhasil, kembali ke halaman sebelumnya
-        header('Location: ' . '..' . $redirect_url);
+        header('Location: ' . $redirect_url);
         exit();
     } else {
         // Gagal

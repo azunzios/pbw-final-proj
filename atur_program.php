@@ -14,7 +14,7 @@ $stmt->bind_param("i", $_SESSION['user_id']);
 $stmt->execute();
 $programs = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 ?>
-
+<div class="content-container">
 <h2>Daftar Program Anda</h2>
 <div class="program-list">
     <?php foreach ($programs as $program): ?>
@@ -37,11 +37,10 @@ $programs = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         </div>
     <?php endforeach; ?>
 </div>
-
 <div class="form-link">
     <p><a href="index.php">&laquo; Kembali ke Beranda</a></p>
 </div>
-
+</div>
 <?php
 require 'includes/footer.php';
 ?>

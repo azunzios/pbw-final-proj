@@ -39,6 +39,7 @@ $conn->close();
 $days_in_indonesian = [1 => 'Senin', 2 => 'Selasa', 3 => 'Rabu', 4 => 'Kamis', 5 => 'Jumat', 6 => 'Sabtu', 7 => 'Minggu'];
 ?>
 
+<div class="content-container">
 <h2>Jadwal Lengkap</h2>
 <a href="buat_jadwal_baru.php" class="btn">Buat Jadwal Baru</a>
 
@@ -86,6 +87,7 @@ $days_in_indonesian = [1 => 'Senin', 2 => 'Selasa', 3 => 'Rabu', 4 => 'Kamis', 5
 
 <div class="form-link" style="margin-top: 20px;">
     <p><a href="index.php">&laquo; Kembali ke Beranda</a></p>
+</div>
 </div>
 
 <?php

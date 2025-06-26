@@ -23,7 +23,7 @@ $pets = $stmt_pets->get_result()->fetch_all(MYSQLI_ASSOC);
 
 $schedule_datetime = new DateTime($schedule['schedule_time']);
 ?>
-
+<div class="form-container">
 <h1>Edit Jadwal</h1>
 <p class="info-text">Anda sedang mengedit jadwal untuk tanggal <?php echo $schedule_datetime->format('d F Y'); ?>.</p>
 
@@ -60,6 +60,7 @@ $schedule_datetime = new DateTime($schedule['schedule_time']);
     </div>
     <button type="submit" class="btn">Simpan Perubahan</button>
 </form>
+</div>
 
 <div class="form-link">
     <p><a href="jadwal_lengkap.php">&laquo; Batal</a></p>

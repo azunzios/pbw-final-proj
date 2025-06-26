@@ -10,10 +10,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const isChecked = this.checked;
         routineOptionsDiv.style.display = isChecked ? 'block' : 'none';
         nonRoutineFields.style.display = isChecked ? 'none' : 'block';
-        
+
         // Atur required fields berdasarkan pilihan
         document.querySelector('input[name="schedule_date"]').required = !isChecked;
-        
+        document.querySelector('input[name="schedule_time"]').required = !isChecked;
+
+        // Hapus required dari semua input di routineOptionsDiv
+        Array.from(routineOptionsDiv.querySelectorAll('input, select')).forEach(function(input) {
+            input.required = false;
+        });
+
         if(isChecked) {
             updateRoutineDetails();
         }
@@ -36,6 +42,11 @@ document.addEventListener('DOMContentLoaded', function() {
             html += '<div class="form-group"><label for="date">Tanggal (1-31):</label><input type="number" name="date" class="form-control" min="1" max="31" required></div>';
         }
         routineDetailsDiv.innerHTML = html;
+
+        // Pastikan hanya input yang tampil yang required
+        Array.from(routineDetailsDiv.querySelectorAll('input, select')).forEach(function(input) {
+            input.required = true;
+        });
     }
     
     // Inisialisasi awal

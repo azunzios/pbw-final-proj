@@ -20,7 +20,7 @@ $username = $_SESSION['username'] ?? ''; // Ambil username jika ada
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo isset($page_title) ? htmlspecialchars($page_title) : 'Manajer Peliharaan'; ?></title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/styles.css">
     <?php if (isset($extra_css)): ?>
         <?php foreach ($extra_css as $css_file): ?>
             <link rel="stylesheet" href="<?php echo $css_file; ?>">
@@ -40,4 +40,4 @@ $username = $_SESSION['username'] ?? ''; // Ambil username jika ada
                 </div>
             </div>
         <?php endif; ?>
-        <div class="content-container">
+        <!-- Mulai konten utama -->
