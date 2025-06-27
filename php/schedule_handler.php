@@ -27,45 +27,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action'])) {
         $title = $_POST['agenda_name'];
         $pet_id = !empty($_POST['pet_id']) ? (int)$_POST['pet_id'] : NULL;
         $label = $_POST['label'];
-        $is_routine = isset($_POST['is_routine']);
-
+        $is_routine = (isset($_POST['is_routine']) && $_POST['is_routine'] === '1');
         $stmt = $conn->prepare("INSERT INTO schedules (program_id, title, pet_id, schedule_time, type, label) VALUES (?, ?, ?, ?, ?, ?)");
-
         if (!$is_routine) {
             // --- LOGIKA UNTUK JADWAL SEKALI (TIDAK RUTIN) ---
             $schedule_datetime = $_POST['schedule_date'] . ' ' . $_POST['schedule_time'];
             $type = 'sekali';
-            
             $stmt->bind_param("isssss", $program_id, $title, $pet_id, $schedule_datetime, $type, $label);
             $stmt->execute();
-
         } else {
             // --- LOGIKA UNTUK JADWAL RUTIN ---
             $routine_type = $_POST['routine_type'];
             $time = $_POST['routine_time'];
-            
-            // Generate instance jadwal untuk 90 hari ke depan untuk efisiensi query.
             $start_date = new DateTime();
             $end_date = (new DateTime())->modify('+90 days');
-            $interval = new DateInterval('P1D'); // Interval 1 hari.
+            $interval = new DateInterval('P1D');
             $period = new DatePeriod($start_date, $interval, $end_date);
-
             foreach ($period as $date) {
                 $match = false;
                 if ($routine_type == 'harian') {
                     $match = true;
                 } elseif ($routine_type == 'mingguan') {
-                    // 'N' mengembalikan 1 untuk Senin s/d 7 untuk Minggu.
                     if ($date->format('N') == $_POST['day']) {
                         $match = true;
                     }
                 } elseif ($routine_type == 'bulanan') {
-                    // 'j' mengembalikan tanggal (1-31).
                     if ($date->format('j') == $_POST['date']) {
                         $match = true;
                     }
                 }
-                
                 if ($match) {
                     $schedule_datetime = $date->format('Y-m-d') . ' ' . $time;
                     $stmt->bind_param("isssss", $program_id, $title, $pet_id, $schedule_datetime, $routine_type, $label);
@@ -74,7 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action'])) {
             }
         }
         $stmt->close();
-        header('Location: ../jadwal_lengkap.php'); // Arahkan ke kalender setelah berhasil.
+        header('Location: ../jadwal_lengkap.php');
         exit();
     }
 

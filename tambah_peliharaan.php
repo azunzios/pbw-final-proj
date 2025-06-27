@@ -29,7 +29,9 @@ require 'includes/header.php';
             <option value="">-- Pilih Gender --</option>
             <option value="Jantan">Jantan</option>
             <option value="Betina">Betina</option>
+            <option value="Lainnya">Lainnya</option>
         </select>
+        <input type="text" id="gender_lain" name="gender_lain" placeholder="Isi gender lain..." style="display:none;margin-top:8px;">
     </div>
     <div class="form-group">
         <label for="notes">Deskripsi:</label>
@@ -44,6 +46,17 @@ require 'includes/header.php';
 <script>
 document.getElementById('jenis').addEventListener('change', function() {
     var lain = document.getElementById('jenis_lain');
+    if(this.value === 'Lainnya') {
+        lain.style.display = 'block';
+        lain.required = true;
+    } else {
+        lain.style.display = 'none';
+        lain.required = false;
+        lain.value = '';
+    }
+});
+document.getElementById('gender').addEventListener('change', function() {
+    var lain = document.getElementById('gender_lain');
     if(this.value === 'Lainnya') {
         lain.style.display = 'block';
         lain.required = true;
