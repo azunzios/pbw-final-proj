@@ -1,0 +1,426 @@
+/* Components CSS - Shared Styles */
+
+/* Squircle Logo Component */
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-squircle {
+  position: relative;
+  display: flex;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 50%, #667eea 100%);
+  border-radius: 16px;
+  box-shadow: 
+    0 4px 12px rgba(79, 172, 254, 0.25),
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.logo-squircle::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%, rgba(255, 255, 255, 0.05) 100%);
+  border-radius: 16px;
+  pointer-events: none;
+}
+
+.logo-squircle:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 
+    0 8px 20px rgba(79, 172, 254, 0.35),
+    0 4px 8px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.logo-icon {
+  width: 22px;
+  height: 22px;
+  color: #ffffff;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+  z-index: 1;
+  transition: all 0.3s ease;
+}
+
+.logo-squircle:hover .logo-icon {
+  transform: scale(1.1);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+}
+
+.logo-text {
+  font-family: "Ginto Normal", sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: -0.3px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.logo-container:hover .logo-text {
+  transform: translateX(2px);
+}
+
+/* Global font overrides for dashboard and components */
+.sidebar,
+.sidebar * {
+  font-family: "Ginto Normal";
+}
+
+.top-header,
+.top-header * {
+  font-family: "Ginto Normal";
+}
+
+.main-content,
+.main-content * {
+  font-family: "Ginto Normal";
+}
+
+/* Sidebar Component */
+.sidebar {
+  position: fixed;
+  top: var(--top-header-height);
+  left: 0;
+  width: 280px;
+  height: calc(100vh - var(--top-header-height));
+  background: var(--gradient-midnight);
+  color: #ffffff;
+  padding: 0.5rem;
+  overflow: visible;
+  transition: var(--transition-medium);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+
+}
+
+.user-info {
+  padding: var(--spacing-lg);
+  text-align: center;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.user-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--spacing-md) auto;
+  font-size: var(--font-xl);
+  font-weight: 600;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.user-avatar:hover {
+  transform: scale(1.05);
+}
+
+.user-name {
+  font-size: var(--font-md);
+  font-weight: 500;
+  color: #ffffff;
+  margin-bottom: var(--spacing-xs);
+  font-family: var(--font-primary);
+  letter-spacing: -0.01em;
+}
+
+.greeting-text {
+  font-size: var(--font-sm);
+  color: #aaaaaa;
+  font-family: var(--font-primary);
+  font-weight: 400;
+}
+
+.sidebar-menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex: 1;
+}
+
+.sidebar-menu li {
+  margin-bottom: var(--spacing-xs);
+}
+
+.sidebar-menu li:last-child {
+  margin-bottom: 0;
+}
+
+.sidebar-menu a {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  color: #aaaaaa;
+  text-decoration: none;
+  transition: var(--transition-fast);
+  font-size: var(--font-sm);
+}
+
+.sidebar-menu a:hover {
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0.08),
+    rgba(255, 255, 255, 0.12)
+  );
+  border-radius: 8px;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar-menu a.active {
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0.15),
+    rgba(255, 255, 255, 0.1)
+  );
+  color: #ffffff;
+  font-weight: 500;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+.sidebar-menu .icon {
+  width: 20px;
+  height: 20px;
+  margin-right: var(--spacing-sm);
+  flex-shrink: 0;
+}
+
+.sidebar-menu span {
+  flex: 1;
+}
+
+.sidebar-bottom {
+  margin-top: auto;
+  padding-top: var(--spacing-md);
+}
+
+.sidebar-bottom .sidebar-menu {
+  padding: 0;
+}
+
+.sidebar-logout {
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.1));
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: var(--spacing-sm);
+  background: linear-gradient(
+    to right,
+    rgba(255, 107, 107, 0.15),
+    rgba(255, 71, 87, 0.1)
+  );
+  border: none;
+  border-radius: 8px;
+  color: #ff6b6b;
+  text-decoration: none;
+  transition: var(--transition-fast);
+  font-size: var(--font-sm);
+  cursor: pointer;
+  padding-left: 1.5rem;
+  font-family: "Ginto Normal";
+}
+
+.logout-btn:hover {
+  background: linear-gradient(
+    to right,
+    rgba(255, 99, 99, 0.25),
+    rgba(255, 71, 87, 0.2)
+  );
+  color: #ff4757;
+  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+}
+
+.logout-btn .icon {
+  width: 20px;
+  height: 20px;
+  margin-right: var(--spacing-sm);
+}
+
+/* Header Component */
+.top-header {
+  background: var(--gradient-midnight-dark);
+  padding: var(--top-header-padding) var(--spacing-lg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  font-size: 1rem;
+  color: white;
+  height: var(--top-header-height);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.header-left {
+  flex: 1;
+  font-weight: 600;
+  font-size: 1.1rem;
+  letter-spacing: -0.01em;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+}
+
+.datetime-info {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  gap: var(--spacing-lg);
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+
+/* Mobile Responsive */
+.hamburger {
+  display: none;
+  position: fixed;
+  top: var(--spacing-lg);
+  left: var(--spacing-lg);
+  z-index: 1100;
+  background: var(--gradient-midnight);
+  border: 1px solid var(--midnight-600);
+  color: #ffffff;
+  padding: var(--spacing-sm);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.hamburger:hover {
+  background: var(--gradient-midnight-dark);
+  border-color: var(--midnight-500);
+}
+
+.hamburger .close-icon {
+  display: none;
+}
+
+.hamburger.active .hamburger-icon {
+  display: none;
+}
+
+.hamburger.active .close-icon {
+  display: block;
+}
+
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+@media (max-width: 768px) {
+  .hamburger {
+    display: block;
+    width: 35px !important;
+    height: 35px !important;
+  }
+
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.active {
+    transform: translateX(0);
+    width: 100%;
+  }
+
+  .sidebar-overlay.active {
+    display: block;
+  }
+
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .top-header {
+    padding-left: calc(var(--spacing-lg) + 60px);
+  }
+
+  .sidebar-header {
+    padding-top: calc(var(--spacing-lg) + 60px);
+  }
+
+  .user-avatar {
+    width: 50px;
+    height: 50px;
+    font-size: var(--font-lg);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .datetime-info {
+    flex-direction: row;
+    gap: var(--spacing-sm);
+  }
+
+  .top-header {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    align-items: flex-start;
+  }
+
+  .datetime-info {
+    align-self: flex-start;
+    padding-top: var(--spacing-sm);
+  }
+
+  /* Logo responsive */
+  .logo-squircle {
+    width: 36px;
+    height: 36px;
+    border-radius: 14px;
+  }
+
+  .logo-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .logo-text {
+    font-size: 16px;
+  }
+
+  .logo-container {
+    gap: 10px;
+  }
+
+  .sidebar {
+    width: 85%;
+  }
+}

@@ -1,0 +1,235 @@
+/* -- Reset & Global Styles -- */
+:root {
+    --primary-color: #4A90E2;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --light-gray: #f4f7fa;
+    --dark-gray: #6c757d;
+    --text-color: #333;
+    --border-color: #e9ecef;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Dashboard specific font styling */
+.dashboard-container, 
+.dashboard-container * {
+    font-family: var(--font-primary);
+}
+
+body {
+    font-family: var(--font-primary);
+    background-color: var(--light-gray);
+    color: var(--text-color);
+    margin: 0;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+    text-decoration: none;
+    color: var(--primary-color);
+}
+
+/* -- Layout -- */
+.dashboard-container {
+    display: block;
+    min-height: 100vh;
+}
+
+.main-content {
+    margin-left: 280px;
+    margin-top: var(--top-header-height);
+    background: var(--color-primary);
+    min-height: calc(100vh - var(--top-header-height));
+    padding: 2rem;
+    transition: margin-left 0.3s ease;
+}
+
+.section {
+    background-color: #ffffff;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    border-radius: 100px;
+}
+
+.section-title, .chart-title {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-color);
+    font-family: var(--font-primary);
+    letter-spacing: -0.02em;
+}
+
+.chart-title {
+    font-size: 1.2rem;
+    color: var(--dark-gray);
+    margin-top: 2rem;
+    font-family: var(--font-primary);
+    font-weight: 500;
+}
+
+/* -- Grids for Stats & Shortcuts -- */
+.stats-grid, .shortcuts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1.5rem;
+}
+
+/* -- Stat Cards -- */
+.stat-card {
+    background-color: var(--light-gray);
+    padding: 1.5rem;
+    border-radius: 10px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    font-family: var(--font-primary);
+    letter-spacing: -0.02em;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: var(--dark-gray);
+    font-weight: 500;
+    font-family: var(--font-primary);
+}
+
+.text-success { color: var(--success-color); }
+.text-danger { color: var(--danger-color); }
+
+/* Category-specific stat cards */
+.stat-card.category-dog, .category-cat, .category-bird, .category-fish {
+    color: white;
+    border: none;
+}
+.stat-card.category-dog .stat-number, .stat-card.category-dog .stat-label { color: white; }
+.stat-card.category-cat .stat-number, .stat-card.category-cat .stat-label { color: white; }
+.stat-card.category-bird .stat-number, .stat-card.category-bird .stat-label { color: white; }
+.stat-card.category-fish .stat-number, .stat-card.category-fish .stat-label { color: white; }
+
+.category-dog { background: linear-gradient(135deg, #ff9a9e, #fecfef); }
+.category-cat { background: linear-gradient(135deg, #a18cd1, #fbc2eb); }
+.category-bird { background: linear-gradient(135deg, #ffecd2, #fcb69f); }
+.category-fish { background: linear-gradient(135deg, #a8edea, #fed6e3); }
+
+
+/* -- Schedule Card -- */
+.schedule-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+}
+
+.schedule-card h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.4rem;
+}
+
+.schedule-time {
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+.schedule-time span {
+    font-style: italic;
+    opacity: 0.8;
+}
+
+/* -- Buttons -- */
+.btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-complete {
+    background-color: #ffffff;
+    color: var(--primary-color);
+}
+
+.btn-complete:hover {
+    background-color: #f0f0f0;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* -- Shortcut Cards -- */
+.shortcut-card {
+    background-color: var(--light-gray);
+    padding: 1.5rem;
+    border-radius: 10px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+}
+
+.shortcut-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow);
+    border-color: var(--primary-color);
+}
+
+.shortcut-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.shortcut-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.shortcut-desc {
+    font-size: 0.85rem;
+    color: var(--dark-gray);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0;
+    }
+    
+    .stats-grid, .shortcuts-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .section {
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .schedule-card {
+        flex-direction: column;
+    }
+    
+    .schedule-actions {
+        margin-top: 1rem;
+        width: 100%;
+    }
+    
+    .btn {
+        width: 100%;
+    }
+}

@@ -1,83 +1,272 @@
 <?php
-// index.php
+require_once 'config/database.php';
 
-$page_title = 'Beranda'; // Tentukan judul halaman
-$extra_css = ['css/beranda.css']; // Tentukan CSS tambahan untuk halaman ini
-require 'includes/header.php'; // Panggil header
+// Cek apakah user sudah login
+session_start();
 
-// Kode PHP spesifik untuk halaman ini tetap di sini
-require 'php/db_connection.php';
-
-$upcoming_schedule = null;
-if(isset($_SESSION['active_program_id'])) {
-    $stmt_schedule = $conn->prepare(
-        "SELECT title, schedule_time, label FROM schedules 
-         WHERE program_id = ? AND is_done = 0 AND schedule_time > NOW() 
-         ORDER BY schedule_time ASC LIMIT 1"
-    );
-    $stmt_schedule->bind_param("i", $_SESSION['active_program_id']);
-    $stmt_schedule->execute();
-    $result_schedule = $stmt_schedule->get_result();
-    $upcoming_schedule = $result_schedule->fetch_assoc();
-    $stmt_schedule->close();
+// Cek session login biasa
+if (isset($_SESSION['user_id'])) {
+    header('Location: dashboard.php');
+    exit;
 }
 
-$user_id = $_SESSION['user_id'];
+// Cek remember me cookie
+if (isset($_COOKIE['remember_token'])) {
+    $token = $_COOKIE['remember_token'];
 
-// Cek program user...
-$stmt = $conn->prepare("SELECT program_id FROM program_members WHERE user_id = ?");
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$result = $stmt->get_result();
-$programs = $result->fetch_all(MYSQLI_ASSOC);
-$stmt->close();
+    try {
+        $pdo = connectDB();
+        $stmt = $pdo->prepare("
+            SELECT u.id, u.username, u.full_name 
+            FROM users u 
+            JOIN remember_tokens rt ON u.id = rt.user_id 
+            WHERE rt.token = ? AND rt.expires_at > NOW()
+        ");
+        $stmt->execute([$token]);
+        $user = $stmt->fetch();
 
-if (!empty($programs)) {
-    $_SESSION['active_program_id'] = $programs[0]['program_id'];
+        if ($user) {
+            // Set session
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['username'] = $user['username'];
+            $_SESSION['full_name'] = $user['full_name'];
+
+            // Update last login
+            $stmt = $pdo->prepare("UPDATE users SET last_login = NOW() WHERE id = ?");
+            $stmt->execute([$user['id']]);
+
+            header('Location: dashboard.php');
+            exit;
+        } else {
+            // Token tidak valid, hapus cookie
+            setcookie('remember_token', '', time() - 3600, '/', '', false, true);
+        }
+    } catch (Exception $e) {
+        // Token error, hapus cookie
+        setcookie('remember_token', '', time() - 3600, '/', '', false, true);
+    }
+}
+
+// Cek apakah ada pesan error
+$error_message = '';
+if (isset($_SESSION['error'])) {
+    $error_message = $_SESSION['error'];
+    unset($_SESSION['error']);
 }
 ?>
 
-<div class="content-container">
-<?php if (empty($programs)): ?>
-    <div class="no-program-view">
-        <h2>Selamat Datang!</h2>
-        <p>Anda belum mempunyai program peliharaan apapun.</p>
-        <a href="buat_program.php" class="btn btn-primary">Buat Baru</a>
-        <p class="or-text">atau</p>
-        <a href="gabung_program.php" class="btn btn-secondary">Tambah yang sudah ada</a>
-    </div>
-<?php else: ?>
-    <div class="dashboard-view">
-        <h2>Program: Peliharaan Rumah</h2>
+<!DOCTYPE html>
+<html lang="id">
 
-        <div class="quick-access">
-            <a href="lihat_peliharaan.php" class="btn">Lihat atau Atur Peliharaan</a>
-            <a href="buat_jadwal_baru.php" class="btn">Buat Jadwal Baru</a>
-            <a href="jadwal_lengkap.php" class="btn">Lihat Jadwal Lengkap</a>
-            <a href="buat_program.php" class="btn btn-secondary">Tambah Program</a>
-        </div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masuk - PetCare Management</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Galindo&display=swap" rel="stylesheet">
+</head>
 
-        <div class="upcoming-schedule">
-            <h3>Jadwal Terdekat</h3>
-            <?php if ($upcoming_schedule): ?>
-                <div class="schedule-item">
-                    <p><strong><?php echo htmlspecialchars($upcoming_schedule['title']); ?></strong></p>
-                    <p>Label: <?php echo htmlspecialchars($upcoming_schedule['label']); ?></p>
-                    <p><?php echo (new DateTime($upcoming_schedule['schedule_time']))->format('d F Y - H:i'); ?></p>
-                    <form action="php/mark_done_handler.php" method="POST">
-                        <input type="hidden" name="schedule_id" value="<?php echo htmlspecialchars($upcoming_schedule['id'] ?? ''); ?>">
-                        <input type="hidden" name="redirect_url" value="/index.php">
-                        <button type="submit" class="btn-done">Sudah</button>
-                    </form>
+<body class="login-page">
+    <div class="login-container">
+        <div class="login-left">
+            <img src="assets/img/login_img.png" alt="PetCare Logo" class="login">
+            <div class="login-web-info">
+                <div class="pet-icons">
+                    <div class="pet-icon">🐶</div>
+                    <div class="pet-icon">🐱</div>
+                    <div class="pet-icon">🐰</div>
+                    <div class="pet-icon">🐦</div>
+                    <div class="pet-icon">🐠</div>
                 </div>
-            <?php else: ?>
-                <p>Tidak ada jadwal terdekat.</p>
-            <?php endif; ?>
+                <div class="app-logo">
+                    <img src="assets/img/logo.svg" alt="PetCare Logo">
+                </div>
+                <div class="app-subtitle">
+                    Kelola <span id="animal-container"><span id="animal">Peliharaan</span></span> Kesayangan Anda
+                </div>
+
+
+            </div>
+        </div>
+
+        <div class="login-right">
+            <!-- Login Form -->
+            <form class="login-form active" id="loginForm" onsubmit="handleLogin(event)">
+                <div class="login-header">
+                    <img class="login-hi" src="assets/img/hi.svg" alt="Login Icon">
+                    <h1 class="login-title">Selamat Datang</h1>
+                    <p class="login-subtitle">Masuk ke akun Anda</p>
+                </div>
+
+                <?php if ($error_message): ?>
+                    <div class="alert alert-danger">
+                        <?php echo htmlspecialchars($error_message); ?>
+                    </div>
+                <?php endif; ?>
+
+                <div class="form-group">
+                    <label for="username" class="form-label">Nama Pengguna</label>
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        class="form-control"
+                        placeholder="Masukkan nama pengguna"
+                        required
+                        autocomplete="username">
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">Kata Sandi</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        class="form-control"
+                        placeholder="Masukkan kata sandi"
+                        required
+                        autocomplete="current-password">
+                </div>
+
+                <div class="form-options">
+                    <div class="remember-me">
+                        <input type="checkbox" id="remember" name="remember" value="1">
+                        <label for="remember">Ingat saya</label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary login-btn">
+                    Masuk
+                </button>
+
+                <div class="register-link">
+                    <p>Belum punya akun? <a href="#" onclick="showRegister()">Daftar di sini</a></p>
+                </div>
+            </form>
+
+            <!-- Register Form -->
+            <form class="login-form" id="registerForm" onsubmit="handleRegister(event)">
+                <div class="login-header">
+                    <h1 class="login-title">Daftar Akun</h1>
+                    <p class="login-subtitle">Buat akun baru Anda</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="reg_fullname" class="form-label">Nama Lengkap</label>
+                    <input
+                        type="text"
+                        id="reg_fullname"
+                        name="fullname"
+                        class="form-control"
+                        placeholder="Masukkan nama lengkap"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="reg_username" class="form-label">Nama Pengguna</label>
+                    <input
+                        type="text"
+                        id="reg_username"
+                        name="username"
+                        class="form-control"
+                        placeholder="Pilih nama pengguna"
+                        required
+                        autocomplete="new-username">
+                </div>
+
+                <div class="form-group">
+                    <label for="reg_email" class="form-label">Email</label>
+                    <input
+                        type="email"
+                        id="reg_email"
+                        name="email"
+                        class="form-control"
+                        placeholder="Masukkan alamat email"
+                        required
+                        autocomplete="email">
+                </div>
+
+                <div class="form-group">
+                    <label for="reg_password" class="form-label">Kata Sandi</label>
+                    <input
+                        type="password"
+                        id="reg_password"
+                        name="password"
+                        class="form-control"
+                        placeholder="Buat kata sandi"
+                        required
+                        autocomplete="new-password"
+                        minlength="6"
+                        oninput="checkPasswordMatch()">
+                </div>
+
+                <div class="form-group">
+                    <label for="reg_confirm_password" class="form-label">Konfirmasi Kata Sandi</label>
+                    <input
+                        type="password"
+                        id="reg_confirm_password"
+                        name="confirm_password"
+                        class="form-control"
+                        placeholder="Ulangi kata sandi"
+                        required
+                        autocomplete="new-password"
+                        oninput="checkPasswordMatch()">
+                    <small id="passwordMatchMessage" class="text-danger" style="display: none;">Kata sandi tidak cocok</small>
+                </div>
+
+                <button type="submit" class="btn btn-primary login-btn">
+                    Daftar
+                </button>
+
+                <div class="register-link">
+                    <p>Sudah punya akun? <a href="#" onclick="showLogin()">Masuk di sini</a></p>
+                </div>
+            </form>
         </div>
     </div>
-<?php endif; ?>
-</div>
 
-<?php
-require 'includes/footer.php'; // Panggil footer
-?>
+    <script src="assets/js/main.js"></script>
+    <script>
+        const animals = ['Kucing', 'Anjing', 'Ikan', 'Burung', 'Kambing', 'Sapi'];
+        let index = 0;
+        const animalSpan = document.getElementById('animal');
+
+        function animateAnimal() {
+            // Phase 1: Slide out (move current text up)
+            animalSpan.classList.add('slide-out');
+            
+            setTimeout(() => {
+                // Phase 2: Change text while off-screen
+                animalSpan.textContent = animals[index];
+                index = (index + 1) % animals.length;
+                
+                // Phase 3: Position new text below (ready to slide in)
+                animalSpan.classList.remove('slide-out');
+                animalSpan.classList.add('slide-in');
+                
+                // Phase 4: Slide in (move new text to center)
+                setTimeout(() => {
+                    animalSpan.classList.remove('slide-in');
+                    animalSpan.classList.add('visible');
+                }, 50);
+                
+                // Clean up classes for next animation
+                setTimeout(() => {
+                    animalSpan.classList.remove('visible');
+                }, 400);
+                
+            }, 400); // Wait for slide-out to complete
+        }
+
+        // Initialize with first animal
+        animalSpan.textContent = animals[index];
+        index = 1;
+
+        // Start animation loop
+        setInterval(animateAnimal, 2500);
+    </script>
+</body>
+
+</html>

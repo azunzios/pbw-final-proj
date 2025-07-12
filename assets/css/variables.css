@@ -1,0 +1,246 @@
+/* Font Definitions */
+@font-face {
+    font-family: 'Ginto Normal';
+    src: url('../fonts/gintonormal.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+:root {
+    /* Warna Utama */
+    --primary-pink: #ff6b9d;
+    --primary-blue: #4ecdc4;
+    --primary-purple: #a8e6cf;
+    --primary-orange: #ffa500;
+    --primary-yellow: #ffd93d;
+    
+    /* Warna Sekunder */
+    --secondary-teal: #26a69a;
+    --secondary-coral: #ff7043;
+    --secondary-lavender: #855dca;
+    --secondary-mint: #81c784;
+    --secondary-peach: #ffab91;
+    
+    /* Warna Background */
+    --bg-light: #f8f9fa;
+    --bg-white: #ffffff;
+    --bg-gray-100: #f1f3f4;
+    --bg-gray-200: #e8eaed;
+    --bg-gray-dark: #282a2c;
+
+    /* Midnight Colors (Copilot AI Style) */
+    --midnight-900: #0f1419;
+    --midnight-800: #1a1f2e;
+    --midnight-700: #252a3a;
+    --midnight-600: #2d3548;
+    --midnight-500: #394055;
+    --midnight-400: #4a5568;
+    --midnight-300: #718096;
+    --midnight-200: #a0aec0;
+    --midnight-100: #cbd5e0;
+
+    /* Midnight Gradients */
+    --gradient-midnight: linear-gradient(to right, var(--midnight-900), var(--midnight-800));
+    --gradient-midnight-subtle: linear-gradient(to right, rgba(15, 20, 25, 0.95), rgba(26, 31, 46, 0.65));
+    --gradient-midnight-dark: linear-gradient(to right, var(--midnight-900), var(--midnight-700));
+
+    
+    /* Warna Text */
+    --text-dark: #394d61;
+    --text-medium: #838e98;
+    --text-light: #afb4ba;
+    --text-white: #ffffff;
+    
+    /* Shadows */
+    --shadow-light: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --shadow-medium: 0 4px 8px rgba(0, 0, 0, 0.15);
+    --shadow-heavy: 0 8px 16px rgba(0, 0, 0, 0.2);
+    
+    /* Font Families */
+    --font-primary: 'Ginto Normal', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    --font-secondary: 'Ginto Normal', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace;
+    --font-login: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    
+    /* Spacing */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-xxl: 3rem;
+    
+    /* Font Sizes */
+    --font-xs: 0.75rem;
+    --font-sm: 0.875rem;
+    --font-md: 1rem;
+    --font-lg: 1.125rem;
+    --font-xl: 1.25rem;
+    --font-xxl: 1.5rem;
+    --font-xxxl: 2rem;
+    
+    /* Transitions */
+    --transition-fast: 0.2s ease;
+    --transition-medium: 0.3s ease;
+    --transition-slow: 0.5s ease;
+
+    /* Sidebar */
+    --sidebar-width: 260px;
+    
+    /* Top Header */
+    --top-header-height: 4rem;
+    --top-header-padding: 1.25rem;
+}
+
+/* Reset CSS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-primary);
+    color: var(--text-dark);
+    background-color: var(--bg-gray-dark);  
+    line-height: 1.6;
+    font-feature-settings: 'kern' 1, 'liga' 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Login page specific styling */
+.login-container body {
+    font-family: var(--font-login);
+}
+
+/* Utility Classes */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.text-danger { color: #e74c3c; }
+.text-success { color: #27ae60; }
+.text-info { color: #3498db; }
+
+.d-flex { display: flex; }
+.flex-column { flex-direction: column; }
+.justify-center { justify-content: center; }
+.align-center { align-items: center; }
+.flex-wrap { flex-wrap: wrap; }
+
+.w-100 { width: 100%; }
+.h-100 { height: 100%; }
+
+.mb-1 { margin-bottom: var(--spacing-xs); }
+.mb-2 { margin-bottom: var(--spacing-sm); }
+.mb-3 { margin-bottom: var(--spacing-md); }
+.mb-4 { margin-bottom: var(--spacing-lg); }
+.mb-5 { margin-bottom: var(--spacing-xl); }
+
+.p-1 { padding: var(--spacing-xs); }
+.p-2 { padding: var(--spacing-sm); }
+.p-3 { padding: var(--spacing-md); }
+.p-4 { padding: var(--spacing-lg); }
+.p-5 { padding: var(--spacing-xl); }
+
+.btn {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border: none;
+    cursor: pointer;
+    font-size: var(--font-md);
+    transition: var(--transition-fast);
+    display: inline-block;
+    text-decoration: none;
+    text-align: center;
+}
+
+.btn-primary {
+    background-color: var(--secondary-lavender);
+    color: var(--text-white);
+    font-family: 'DM Sans', sans-serif;
+}
+
+.btn-primary:hover {
+    background-color: #4b238f;
+}
+
+.btn-secondary {
+    background-color: var(--primary-blue);
+    color: var(--text-white);
+}
+
+.btn-secondary:hover {
+    background-color: #44b8b0;
+}
+
+.form-control {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 2px solid var(--bg-gray-200);
+    font-size: var(--font-md);
+    transition: var(--transition-fast);
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-pink);
+}
+
+.card {
+    background-color: var(--bg-white);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-medium);
+    margin-bottom: var(--spacing-md);
+}
+
+.alert {
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    border-left: 4px solid;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    animation: slideInDown 0.3s ease-out;
+}
+
+/* Alert positioning for login forms */
+.login-form .alert {
+    position: absolute;
+    top: -60px;
+    left: 0;
+    right: 0;
+    margin: 0 0 var(--spacing-md) 0;
+    z-index: 10;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.alert-danger {
+    background-color: #ffeaea;
+    border-color: #e74c3c;
+    color: #c0392b;
+}
+
+.alert-success {
+    background-color: #eafaf1;
+    border-color: #27ae60;
+    color: #229954;
+}
+
+.alert-info {
+    background-color: #e8f4fd;
+    border-color: #3498db;
+    color: #2980b9;
+}
