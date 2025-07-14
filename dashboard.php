@@ -1,6 +1,7 @@
 <?php
 require_once 'includes/auth.php';
 require_once 'config/database.php';
+require_once 'utils/timezone.php';
 
 // Cek otentikasi dan dapatkan data pengguna
 checkAuth();
@@ -11,7 +12,7 @@ $pageTitle = 'Beranda';
 $pet_stats = ['total_pets' => 0, 'dogs' => 0, 'cats' => 0, 'birds' => 0, 'fish' => 0, 'others' => 0];
 $schedule_stats = ['total_today' => 0, 'completed' => 0, 'missed' => 0, 'remaining' => 0];
 $next_schedule = null;
-$today = date('Y-m-d');
+$today = formatDateWithTimezone(new DateTime(), 'Y-m-d');
 
 try {
     $pdo = connectDB();
@@ -31,6 +32,17 @@ try {
     $stmt->execute([$userId]);
     $pet_stats = $stmt->fetch(PDO::FETCH_ASSOC);
 
+    // 1.1. Ambil semua tipe peliharaan dengan jumlahnya (untuk chart dinamis)
+    $stmt = $pdo->prepare("
+        SELECT type, COUNT(*) as count 
+        FROM pets 
+        WHERE user_id = ? 
+        GROUP BY type 
+        ORDER BY count DESC, type ASC
+    ");
+    $stmt->execute([$userId]);
+    $pet_types = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
     // 2. Ambil statistik jadwal hari ini
     $stmt = $pdo->prepare("
         SELECT 
@@ -45,18 +57,24 @@ try {
     $stmt->execute([$userId, $today]);
     $schedule_stats = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // 3. Ambil jadwal terdekat yang belum selesai
+    // 3. Ambil jadwal terdekat hari ini (prioritas: belum selesai yang akan datang, lalu yang belum selesai sudah lewat, terakhir yang sudah selesai)
     $stmt = $pdo->prepare("
         SELECT 
-            s.care_type, s.schedule_time, p.name as pet_name, si.id as instance_id
+            s.care_type, s.schedule_time, p.name as pet_name, si.id as instance_id, si.is_done,
+            CASE 
+                WHEN si.is_done = 0 AND CONCAT(si.date, ' ', s.schedule_time) >= NOW() THEN 1
+                WHEN si.is_done = 0 AND CONCAT(si.date, ' ', s.schedule_time) < NOW() THEN 2
+                ELSE 3
+            END as priority
         FROM schedules s 
         JOIN pets p ON s.pet_id = p.id 
         JOIN schedule_instances si ON s.id = si.schedule_id
-        WHERE s.user_id = ? AND si.date = ? AND si.is_done = 0 AND CONCAT(si.date, ' ', s.schedule_time) > NOW()
-        ORDER BY s.schedule_time LIMIT 1
+        WHERE s.user_id = ? AND si.date = ?
+        ORDER BY priority ASC, s.schedule_time ASC 
+        LIMIT 1
     ");
     $stmt->execute([$userId, $today]);
-    $next_schedule = $stmt->fetch(PDO::FETCH_ASSOC);
+    $today_schedule = $stmt->fetch(PDO::FETCH_ASSOC);
 } catch (Exception $e) {
     // Bisa ditambahkan logging error di sini, misal: error_log($e->getMessage());
 }
@@ -64,19 +82,101 @@ try {
 /**
  * Helper function untuk format waktu tersisa.
  */
-function formatTimeUntil($scheduleTime)
+function formatTimeUntil($scheduleTime, $scheduleDate = null)
 {
-    $now = new DateTime();
-    $target = new DateTime(date('Y-m-d') . ' ' . $scheduleTime);
-    if ($now > $target) return 'Telah lewat';
+    try {
+        $timezone = getUserTimezone();
+        $now = new DateTime();
+        $now->setTimezone(new DateTimeZone($timezone));
+        
+        // Bersihkan dan normalisasi input
+        $scheduleTime = trim($scheduleTime);
+        
+        // Jika input berupa waktu saja (HH:MM:SS)
+        if (preg_match('/^\d{2}:\d{2}:\d{2}$/', $scheduleTime)) {
+            $targetDate = $scheduleDate ?: formatDateWithTimezone($now, 'Y-m-d');
+            $target = new DateTime($targetDate . ' ' . $scheduleTime);
+            $target->setTimezone(new DateTimeZone($timezone));
+        } 
+        // Jika input berupa datetime lengkap
+        else {
+            $target = new DateTime($scheduleTime);
+            $target->setTimezone(new DateTimeZone($timezone));
+        }
+        
+        if ($now > $target) return 'Telah lewat';
 
-    $interval = $now->diff($target);
-    $minutes = $interval->h * 60 + $interval->i;
+        $interval = $now->diff($target);
+        $minutes = $interval->h * 60 + $interval->i;
 
-    if ($minutes >= 60) {
-        return floor($minutes / 60) . ' jam ' . ($minutes % 60) . ' menit lagi';
+        if ($minutes >= 60) {
+            return floor($minutes / 60) . ' jam ' . ($minutes % 60) . ' menit lagi';
+        }
+        return $minutes . ' menit lagi';
+    } catch (Exception $e) {
+        return 'Format waktu tidak valid';
     }
-    return $minutes . ' menit lagi';
+}
+
+/**
+ * Helper function untuk mendapatkan status jadwal.
+ */
+function getScheduleStatus($schedule, $scheduleDate = null)
+{
+    if ($schedule['is_done'] == 1) {
+        return ['status' => 'completed', 'text' => '✅ Selesai', 'class' => 'text-success'];
+    }
+    
+    try {
+        $timezone = getUserTimezone();
+        $now = new DateTime();
+        $now->setTimezone(new DateTimeZone($timezone));
+        
+        // Bersihkan dan normalisasi input
+        $scheduleTime = trim($schedule['schedule_time']);
+        
+        // Jika input berupa waktu saja (HH:MM:SS)
+        if (preg_match('/^\d{2}:\d{2}:\d{2}$/', $scheduleTime)) {
+            $targetDate = $scheduleDate ?: formatDateWithTimezone($now, 'Y-m-d');
+            $target = new DateTime($targetDate . ' ' . $scheduleTime);
+            $target->setTimezone(new DateTimeZone($timezone));
+        } 
+        // Jika input berupa datetime lengkap
+        else {
+            $target = new DateTime($scheduleTime);
+            $target->setTimezone(new DateTimeZone($timezone));
+        }
+        
+        if ($now > $target) {
+            return ['status' => 'missed', 'text' => '⏰ Terlewat', 'class' => 'text-danger'];
+        }
+        
+        return ['status' => 'upcoming', 'text' => '⏳ Akan datang', 'class' => 'text-warning'];
+    } catch (Exception $e) {
+        // Fallback jika ada error parsing
+        return ['status' => 'unknown', 'text' => '❓ Status tidak diketahui', 'class' => 'text-secondary'];
+    }
+}
+function getPetTypeColor($type)
+{
+    $colors = [
+        'Anjing' => '#ff9800',
+        'Kucing' => '#e91e63',
+        'Burung' => '#2196f3',
+        'Ikan' => '#00bcd4',
+        'Kelinci' => '#9c27b0',
+        'Hamster' => '#ff5722',
+        'Iguana' => '#4caf50',
+        'Kura-kura' => '#795548',
+        'Ular' => '#607d8b',
+        'Reptil' => '#4caf50',
+        'Amfibi' => '#8bc34a',
+        'Serangga' => '#ffc107',
+        'Tarantula' => '#424242',
+        'Laba-laba' => '#424242'
+    ];
+    
+    return isset($colors[$type]) ? $colors[$type] : '#9e9e9e';
 }
 ?>
 <!DOCTYPE html>
@@ -97,8 +197,11 @@ function formatTimeUntil($scheduleTime)
     <div class="dashboard-container">
         <?php include 'components/sidebar.php'; ?>
         <main class="main-content">
+            <!-- Statistics Section -->
             <section class="section">
-                <h2 class="section-title">Ikhtisar</h2>
+                <div class="section-title">
+                    <h2 class="section-title-text">Ikhtisar Statistik</h2>
+                </div>
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-number"><?= (int)$pet_stats['total_pets'] ?></div>
@@ -116,52 +219,81 @@ function formatTimeUntil($scheduleTime)
                         <div class="stat-number text-danger"><?= (int)$schedule_stats['missed'] ?></div>
                         <div class="stat-label">Terlewat</div>
                     </div>
-                </div>
-
-                <h3 class="chart-title">Peliharaan per Kategori</h3>
-                <div class="stats-grid">
-                    <div class="stat-card category-dog">
-                        <div class="stat-number"><?= (int)$pet_stats['dogs'] ?></div>
-                        <div class="stat-label">🐶 Anjing</div>
-                    </div>
-                    <div class="stat-card category-cat">
-                        <div class="stat-number"><?= (int)$pet_stats['cats'] ?></div>
-                        <div class="stat-label">🐱 Kucing</div>
-                    </div>
-                    <div class="stat-card category-bird">
-                        <div class="stat-number"><?= (int)$pet_stats['birds'] ?></div>
-                        <div class="stat-label">🐦 Burung</div>
-                    </div>
-                    <div class="stat-card category-fish">
-                        <div class="stat-number"><?= (int)$pet_stats['fish'] ?></div>
-                        <div class="stat-label">🐠 Ikan</div>
+                    <div class="stat-card">
+                        <div class="stat-number"><?= (int)$schedule_stats['remaining'] ?></div>
+                        <div class="stat-label">Tersisa</div>
                     </div>
                 </div>
             </section>
 
-            <?php if ($next_schedule): ?>
-                <section class="section">
-                    <h2 class="section-title">Jadwal Terdekat</h2>
+            <!-- Pet Categories Chart Section -->
+            <section class="section">
+                <div class="section-title">
+                    <h2 class="section-title-text">Peliharaan per Kategori</h2>
+                </div>
+                <div class="stats-grid">
+                    <?php if (!empty($pet_types)): ?>
+                        <?php foreach ($pet_types as $pet_type): ?>
+                            <div class="stat-card" style="border-color: <?= getPetTypeColor($pet_type['type']) ?>;">
+                                <div class="stat-number"><?= (int)$pet_type['count'] ?></div>
+                                <div class="stat-label"><?= getPetTypeEmoji($pet_type['type']) ?> <?= htmlspecialchars($pet_type['type']) ?></div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <div class="stat-card">
+                            <div class="stat-number">0</div>
+                            <div class="stat-label">🐾 Belum ada peliharaan</div>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </section>
+
+            <!-- Today's Schedule Section -->
+            <section class="section">
+                <div class="section-title">
+                    <h2 class="section-title-text">Jadwal Hari Ini Terdekat</h2>
+                </div>
+                <?php if ($today_schedule): ?>
+                    <?php $status = getScheduleStatus($today_schedule, $today); ?>
                     <div class="schedule-card">
                         <div class="schedule-info">
-                            <h3><?= htmlspecialchars($next_schedule['care_type']) ?></h3>
+                            <h3><?= htmlspecialchars($today_schedule['care_type']) ?></h3>
                             <div class="schedule-time">
-                                🐾 <?= htmlspecialchars($next_schedule['pet_name']) ?> •
-                                ⏰ <?= date('H:i', strtotime($next_schedule['schedule_time'])) ?>
-                                <span>(<?= formatTimeUntil($next_schedule['schedule_time']) ?>)</span>
+                                🐾 <?= htmlspecialchars($today_schedule['pet_name']) ?> •
+                                ⏰ <?= date('H:i', strtotime($today_schedule['schedule_time'])) ?>
+                                <?php if ($status['status'] == 'upcoming'): ?>
+                                    <span class="<?= $status['class'] ?>">(<?= formatTimeUntil($today_schedule['schedule_time'], $today) ?>)</span>
+                                <?php endif; ?>
                             </div>
+                            <div class="schedule-status <?= $status['class'] ?>"><?= $status['text'] ?></div>
                         </div>
                         <div class="schedule-actions">
-                            <button class="btn btn-complete" onclick="completeSchedule(<?= (int)$next_schedule['instance_id'] ?>)">
-                                ✓ Tandai Selesai
-                            </button>
+                            <?php if ($status['status'] == 'upcoming'): ?>
+                                <button class="btn btn-complete" onclick="completeSchedule(<?= (int)$today_schedule['instance_id'] ?>)">
+                                    ✓ Tandai Selesai
+                                </button>
+                            <?php elseif ($status['status'] == 'missed'): ?>
+                                <button class="btn btn-complete" onclick="completeSchedule(<?= (int)$today_schedule['instance_id'] ?>)">
+                                    ✓ Tandai Selesai
+                                </button>
+                            <?php endif; ?>
                         </div>
                     </div>
-                </section>
-            <?php endif; ?>
+                <?php else: ?>
+                    <div class="no-schedule-card">
+                        <div class="no-schedule-icon">📅</div>
+                        <div class="no-schedule-text">Belum ada jadwal hari ini</div>
+                        <div class="no-schedule-desc">Silakan buat jadwal perawatan untuk peliharaan Anda</div>
+                        <a href="schedules.php" class="btn btn-primary">Buat Jadwal</a>
+                    </div>
+                <?php endif; ?>
+            </section>
 
+            <!-- Quick Actions Section -->
             <section class="section">
-                <h2 class="section-title">Pintasan</h2>
+                <div class="section-title">
+                    <h2 class="section-title-text">Pintasan</h2>
+                </div>
                 <div class="shortcuts-grid">
                     <a href="schedules.php" class="shortcut-card">
                         <div class="shortcut-icon">📅</div>
@@ -190,6 +322,22 @@ function formatTimeUntil($scheduleTime)
 
     <script src="assets/js/main.js"></script>
     <script>
+        // Horizontal scroll with mouse wheel for stats grid
+        document.addEventListener('DOMContentLoaded', function() {
+            const statsGrids = document.querySelectorAll('.stats-grid');
+            
+            statsGrids.forEach(grid => {
+                grid.addEventListener('wheel', function(e) {
+                    if (this.scrollWidth > this.clientWidth) {
+                        e.preventDefault();
+                        this.scrollLeft += e.deltaY;
+                    }
+                });
+                
+                grid.classList.add('horizontal-scroll');
+            });
+        });
+
         function completeSchedule(instanceId) {
             if (!confirm('Apakah Anda yakin jadwal ini sudah selesai?')) return;
 

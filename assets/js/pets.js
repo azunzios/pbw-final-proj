@@ -9,6 +9,8 @@ window.editPet = editPet;
 window.openEditModal = openEditModal;
 window.deletePet = deletePet;
 window.loadPets = loadPets;
+window.openAddModal = openAddModal;
+window.showPetDetail = showPetDetail;
 
 function initializePetManagement() {
     setupEventListeners();
@@ -24,7 +26,7 @@ function setupEventListeners() {
     }
 
     // Add pet button
-    const addBtn = document.getElementById('addPetBtn');
+    const addBtn = document.querySelector('.add-btn');
     if (addBtn) {
         addBtn.addEventListener('click', openAddModal);
     }
@@ -92,7 +94,7 @@ function loadPets() {
     if (!container) return;
 
     // Show loading state
-    container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #aaaaaa;">Memuat peliharaan...</div>';
+    container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #6b6b6bff;">Memuat peliharaan...</div>';
 
     const params = new URLSearchParams({
         page: currentPage,
@@ -115,6 +117,8 @@ function loadPets() {
         });
 }
 
+
+
 function displayPets(pets, pagination) {
     const container = document.getElementById('petsContainer');
     
@@ -132,9 +136,6 @@ function displayPets(pets, pagination) {
 
     // Update pagination
     updatePagination(pagination);
-
-    // Add event listeners to action buttons
-    addActionListeners();
 }
 
 function createPetCard(pet) {
@@ -144,9 +145,7 @@ function createPetCard(pet) {
 
     const defaultAvatar = `
         <div class="default-avatar">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                ${getPetIcon(pet.type)}
-            </svg>
+            <div class="default-pet-emoji">${getPetTypeEmoji(pet.type)}</div>
         </div>
     `;
 
@@ -252,37 +251,39 @@ function createPetCard(pet) {
     }
 }
 
-function getPetIcon(type) {
-    const icons = {
-        'Anjing': '<path d="M10 5.172C10 3.782 8.423 2.679 6.5 3c-2.823.47-4.113 6.006-4 7 .08.703 1.725 1.722 3.656 1 1.261-.472 1.96-1.554 2.4-2.41.388-.75 1.414-1.96 1.414-3.418z"/><path d="M14.267 5.172c0-1.39 1.577-2.493 3.5-2.172 2.823.47 4.113 6.006 4 7-.08.703-1.725 1.722-3.656 1-1.261-.472-1.96-1.554-2.4-2.41-.388-.75-1.414-1.96-1.414-3.418z"/><path d="M8 14v.5c0 .61-.4.5-1 .5s-1.61.06-1 .5v-.5h1.5z"/><path d="M16 14v.5c0 .61.4.5 1 .5s1.61.06 1 .5v-.5H16z"/><path d="M12 18c1.5 0 2.5-.5 2.5-1.5s-.5-1.5-1.5-1.5-1.5.5-1.5 1.5.5 1.5 1.5 1.5z"/>',
-        'Kucing': '<path d="M12 2l3 7s.36 2.4-1 3c-.8.36-2 .6-3 .6s-2.2-.24-3-.6c-1.36-.6-1-3-1-3l3-7z"/><circle cx="9" cy="9" r="1"/><circle cx="15" cy="9" r="1"/><path d="M9 12s1 1 3 1 3-1 3-1"/><path d="M12 2c-1 0-1.5.5-1.5 1.5v1c0 .28-.22.5-.5.5s-.5-.22-.5-.5v-1C9.5 2.5 10 2 11 2h2z"/>',
-        'Burung': '<path d="M16 7h.01"/><path d="M3.4 18H12a8 8 0 0 0 8-8V7a4 4 0 0 0-7.28-2.3L2 20l1.4-2z"/><path d="M20 7v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7"/>',
-        'Ikan': '<path d="M6.5 12c.94-3.46 4.94-6 8.5-6s7.56 2.54 8.5 6c-.94 3.46-4.94 6-8.5 6s-7.56-2.54-8.5-6z"/><circle cx="15" cy="12" r="3"/><circle cx="15" cy="12" r="1"/>',
-        'Other': '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="4.93" y1="4.93" x2="9.17" y2="9.17"/><line x1="14.83" y1="14.83" x2="19.07" y2="19.07"/><line x1="14.83" y1="9.17" x2="19.07" y2="4.93"/><line x1="14.83" y1="9.17" x2="18.36" y2="5.64"/><line x1="4.93" y1="19.07" x2="9.17" y2="14.83"/>'
+function getPetTypeEmoji(type) {
+    const emojis = {
+        'Anjing': '🐕',
+        'Kucing': '🐱',
+        'Burung': '🐦',
+        'Ikan': '🐠',
+        'Hamster': '🐹',
+        'Kelinci': '🐰',
+        'Kura-kura': '🐢',
+        'Iguana': '🦎',
+        'Ular': '🐍',
+        'Ayam': '🐔',
+        'Bebek': '🦆',
+        'Angsa': '🦢',
+        'Sapi': '🐄',
+        'Kambing': '🐐',
+        'Domba': '🐑',
+        'Kuda': '🐎',
+        'Babi': '🐷'
     };
-    return icons[type] || icons['Other'];
+    
+    return emojis[type] || '🐾';
 }
 
 function showEmptyState() {
     const container = document.getElementById('petsContainer');
     container.innerHTML = `
         <div class="empty-state">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/>
-                <circle cx="12" cy="12" r="4"/>
-                <line x1="4.93" y1="4.93" x2="9.17" y2="9.17"/>
-                <line x1="14.83" y1="14.83" x2="19.07" y2="19.07"/>
-                <line x1="14.83" y1="9.17" x2="19.07" y2="4.93"/>
-                <line x1="14.83" y1="9.17" x2="18.36" y2="5.64"/>
-                <line x1="4.93" y1="19.07" x2="9.17" y2="14.83"/>
-            </svg>
+            <div class="empty-pet-emoji">🐾</div>
             <h3>Belum ada peliharaan</h3>
             <p>Mulai dengan menambahkan peliharaan pertama Anda</p>
             <button class="btn-primary" onclick="openAddModal()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="12" y1="5" x2="12" y2="19"/>
-                    <line x1="5" y1="12" x2="19" y2="12"/>
-                </svg>
+                <span>➕</span>
                 Tambah Peliharaan
             </button>
         </div>
@@ -327,6 +328,12 @@ function updatePagination(pagination) {
             loadPets();
         });
     });
+}
+
+function showPetDetail(petId) {
+    // For now, just edit the pet since the detail view might not be fully implemented
+    // You can enhance this later to show a proper detail view
+    editPet(petId);
 }
 
 function openAddModal() {
@@ -527,10 +534,7 @@ function handleTypeChange() {
     }
 }
 
-function addActionListeners() {
-    // This function can be used to add any additional event listeners
-    // after pets are loaded if needed
-}
+
 
 function updateStats() {
     // Update total pets count in header

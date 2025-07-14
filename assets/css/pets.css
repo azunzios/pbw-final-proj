@@ -2,17 +2,44 @@
 .pets-container {
     display: block;
     min-height: 100vh;
-    background: var(--color-primary);
+    background: #212121;
+}
+
+/* Pet Emoji Styles */
+.default-pet-emoji {
+    font-size: 2rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.empty-pet-emoji {
+    font-size: 3rem;
+    opacity: 0.6;
+    margin-bottom: var(--spacing-md);
+}
+
+/* Default avatar container for emojis */
+.default-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
 }
 
 /* Specific layout for pets page main content */
 .pets-container .main-content {
     margin: 0 0 0 280px;
-    background: var(--color-primary);
+    background: #212121;
     min-height: calc(100vh - 3rem);
     padding: 0;
     transition: margin-left 0.3s ease;
     width: calc(100% - 280px);
+    overscroll-behavior: contain;
 }
 
 /* Fallback for dashboard container if used */
@@ -23,7 +50,9 @@
 
 /* Reset main content for other cases */
 .main-content {
-    background: var(--color-primary);
+    display: flex;
+    flex-direction: column;
+    background: #212121;
 }
 
 /* Actions Bar */
@@ -46,7 +75,7 @@
 .search-container input {
     width: 100%;
     background-color: #0f0f0f;
-    border: 1px solid #383838;
+    border: 2px dashed #404040;
     border-radius: 8px;
     padding: var(--spacing-sm) var(--spacing-md);
     padding-left: 40px;
@@ -56,7 +85,7 @@
 
 .search-container input:focus {
     outline: none;
-    border-color: #ffffff;
+    border-color: #606060;
 }
 
 .search-container input::placeholder {
@@ -88,8 +117,8 @@
 }
 
 .add-btn:hover {
-    background-color: #ffffff;
-    color: #212121;
+    background-color: #323232;
+    border-color: #606060;
 }
 
 .add-btn .icon {
@@ -138,7 +167,7 @@
 
 /* Stats Summary */
 .stats-summary {
-    background-color: #212121;
+    background-color: #1a1a1a;
     border-bottom: 1px solid #383838;
     padding: var(--spacing-md) var(--spacing-lg);
     display: flex;
@@ -181,8 +210,8 @@
 }
 
 .pet-list-item {
-    background-color: #212121;
-    border: 1px solid #383838;
+    background-color: #282828;
+    border: 2px dashed #404040;
     border-radius: 8px;
     padding: var(--spacing-md);
     margin-bottom: var(--spacing-md);
@@ -194,16 +223,14 @@
 }
 
 .pet-list-item:hover {
-    border-color: #ffffff;
-    background-color: #2a2a2a;
+    border-color: #606060;
+    background-color: #323232;
 }
 
 .pet-list-avatar {
     width: 60px;
     height: 60px;
-    border-radius: 50%;
     overflow: hidden;
-    background-color: #383838;
     flex-shrink: 0;
 }
 
@@ -258,8 +285,8 @@
 }
 
 .pet-detail-header {
-    background-color: #212121;
-    border: 1px solid #383838;
+    background-color: #282828;
+    border: 2px dashed #404040;
     border-radius: 12px;
     padding: var(--spacing-lg);
     margin-bottom: var(--spacing-lg);
@@ -334,8 +361,8 @@
 
 .btn-detail {
     padding: var(--spacing-xs) var(--spacing-sm);
-    border: 1px solid #383838;
-    background-color: #212121;
+    border: 2px dashed #404040;
+    background-color: #282828;
     color: #ffffff;
     border-radius: 6px;
     cursor: pointer;
@@ -347,8 +374,8 @@
 }
 
 .btn-detail:hover {
-    border-color: #ffffff;
-    background-color: #2a2a2a;
+    border-color: #606060;
+    background-color: #323232;
 }
 
 .btn-detail.btn-edit:hover {
@@ -374,8 +401,8 @@
 }
 
 .detail-section {
-    background-color: #212121;
-    border: 1px solid #383838;
+    background-color: #282828;
+    border: 2px dashed #404040;
     border-radius: 12px;
     padding: var(--spacing-lg);
 }
@@ -443,7 +470,7 @@
 /* Back Button */
 .back-btn {
     background-color: transparent;
-    border: 1px solid #383838;
+    border: 2px dashed #404040;
     color: #aaaaaa;
     padding: var(--spacing-sm) var(--spacing-md);
     border-radius: 8px;
@@ -532,8 +559,8 @@
 
 /* Pet Cards */
 .pet-card {
-    background-color: #212121;
-    border: 1px solid #383838;
+    background-color: #282828;
+    border: 2px dashed #404040;
     border-radius: 12px;
     overflow: hidden;
     transition: var(--transition-fast);
@@ -543,8 +570,9 @@
 }
 
 .pet-card:hover {
-    border-color: #ffffff;
-    transform: translateY(-4px);
+    border-color: #606060;
+    background-color: #323232;
+    transform: translateY(-2px);
 }
 
 .pet-image {
@@ -801,7 +829,7 @@
 
 .weight-unit {
     position: absolute;
-    right: var(--spacing-sm);
+    right: 23%;
     color: #aaaaaa;
     font-size: var(--font-sm);
     pointer-events: none;

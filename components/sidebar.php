@@ -48,7 +48,7 @@ $avatarColor = generateAvatarColor($user['full_name']);
 ?>
 
 <!-- Hamburger Menu untuk Mobile -->
-<button class="hamburger" onclick="toggleSidebar()">
+<button class="hamburger" onclick="toggleSidebar()" autocomplete="off" type="button">
     <span class="hamburger-icon">☰</span>
     <span class="close-icon">✕</span>
 </button>
@@ -77,10 +77,7 @@ $avatarColor = generateAvatarColor($user['full_name']);
     <ul class="sidebar-menu">
         <li>
             <a href="dashboard.php" <?php echo $currentPage === 'dashboard' ? 'class="active"' : ''; ?>>
-                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                    <polyline points="9,22 9,12 15,12 15,22"/>
-                </svg>
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M480-200q-99 0-169.5-13.5T240-246v-34h-73q-35 0-59-26t-21-61l27-320q2-31 25-52t55-21h572q32 0 55 21t25 52l27 320q3 35-21 61t-59 26h-73v34q0 19-70.5 32.5T480-200ZM167-360h626l-27-320H194l-27 320Zm313-160Z"/></svg>
                 <span>Beranda</span>
             </a>
         </li>
@@ -97,22 +94,13 @@ $avatarColor = generateAvatarColor($user['full_name']);
         </li>
         <li>
             <a href="pets.php" <?php echo $currentPage === 'pets' ? 'class="active"' : ''; ?>>
-                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2Z"/>
-                    <path d="M21 9V7L15 1L9 7V9C9 10 9 11 11 13L12 14L13 13C15 11 15 10 15 9Z"/>
-                    <path d="M8 14C8.5 14 9 14.5 9 15V18C9 18.5 8.5 19 8 19C7.5 19 7 18.5 7 18V15C7 14.5 7.5 14 8 14Z"/>
-                    <path d="M16 14C16.5 14 17 14.5 17 15V18C17 18.5 16.5 19 16 19C15.5 19 15 18.5 15 18V15C15 14.5 15.5 14 16 14Z"/>
-                </svg>
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M640-120q-33 0-56.5-23.5T560-200v-160q0-33 23.5-56.5T640-440h160q33 0 56.5 23.5T880-360v160q0 33-23.5 56.5T800-120H640Zm0-80h160v-160H640v160ZM80-240v-80h360v80H80Zm560-280q-33 0-56.5-23.5T560-600v-160q0-33 23.5-56.5T640-840h160q33 0 56.5 23.5T880-760v160q0 33-23.5 56.5T800-520H640Zm0-80h160v-160H640v160ZM80-640v-80h360v80H80Zm640 360Zm0-400Z"/></svg>
                 <span>Kelola Peliharaan</span>
             </a>
         </li>
         <li>
             <a href="measurements.php" <?php echo $currentPage === 'measurements' ? 'class="active"' : ''; ?>>
-                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="18" y1="20" x2="18" y2="10"/>
-                    <line x1="12" y1="20" x2="12" y2="4"/>
-                    <line x1="6" y1="20" x2="6" y2="14"/>
-                </svg>
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M280-280h80v-200h-80v200Zm320 0h80v-400h-80v400Zm-160 0h80v-120h-80v120Zm0-200h80v-80h-80v80ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm0-560v560-560Z"/></svg>
                 <span>Pengukuran</span>
             </a>
         </li>
@@ -121,7 +109,7 @@ $avatarColor = generateAvatarColor($user['full_name']);
     <div class="sidebar-bottom">
         <ul class="sidebar-menu">
             <li>
-                <a href="profile.php" <?php echo $currentPage === 'profile' ? 'class="active"' : ''; ?>>
+                <a href="settings.php" <?php echo $currentPage === 'profile' ? 'class="active"' : ''; ?>>
                     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                         <circle cx="12" cy="7" r="4"/>

@@ -1,10 +1,36 @@
 <?php
-session_start();
-require_once 'config/database.php';
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+require_once __DIR__ . '/../config/database.php';
+
+function loadUserTimezone() {
+    // Load user timezone preferences if not already in session
+    if (!isset($_SESSION['timezone']) && isset($_SESSION['user_id'])) {
+        try {
+            $pdo = connectDB();
+            $userId = $_SESSION['user_id'];
+            
+            // Get timezone from database
+            $stmt = $pdo->prepare("SELECT timezone FROM user_preferences WHERE user_id = ?");
+            $stmt->execute([$userId]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($result) {
+                $_SESSION['timezone'] = $result['timezone'];
+            } else {
+                $_SESSION['timezone'] = 'Asia/Jakarta';  // Default
+            }
+        } catch (Exception $e) {
+            $_SESSION['timezone'] = 'Asia/Jakarta';  // Default on error
+        }
+    }
+}
 
 function checkAuth() {
     // Cek session login biasa
     if (isset($_SESSION['user_id'])) {
+        loadUserTimezone();
         return;
     }
     
@@ -28,6 +54,9 @@ function checkAuth() {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['username'] = $user['username'];
                 $_SESSION['full_name'] = $user['full_name'];
+                
+                // Load user timezone preferences
+                loadUserTimezone();
                 
                 // Update last login
                 $stmt = $pdo->prepare("UPDATE users SET last_login = NOW() WHERE id = ?");

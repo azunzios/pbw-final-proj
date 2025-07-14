@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
@@ -24,6 +26,7 @@ try {
     $search = isset($_GET['search']) ? trim($_GET['search']) : '';
     $id = isset($_GET['id']) ? intval($_GET['id']) : null;
     $stats = isset($_GET['stats']) && $_GET['stats'] === 'true';
+    $all = isset($_GET['all']) && $_GET['all'] === 'true'; // New parameter for getting all pets
     
     // If requesting stats only
     if ($stats) {
@@ -85,32 +88,53 @@ try {
     $totalRecords = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
     $totalPages = ceil($totalRecords / $limit);
     
-    // Get pets with pagination
-    $query = "SELECT * FROM pets $whereClause ORDER BY created_at DESC LIMIT :limit OFFSET :offset";
-    $stmt = $db->prepare($query);
-    
-    foreach ($params as $key => $value) {
-        $stmt->bindValue($key, $value);
+    // Get pets - with or without pagination
+    if ($all) {
+        // Get all pets without pagination
+        $query = "SELECT * FROM pets $whereClause ORDER BY created_at DESC";
+        $stmt = $db->prepare($query);
+        
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
+        }
+        
+        $stmt->execute();
+        $pets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Format response for all pets
+        $response = [
+            'success' => true,
+            'pets' => $pets,
+            'total' => $totalRecords
+        ];
+    } else {
+        // Get pets with pagination
+        $query = "SELECT * FROM pets $whereClause ORDER BY created_at DESC LIMIT :limit OFFSET :offset";
+        $stmt = $db->prepare($query);
+        
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
+        }
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        
+        $stmt->execute();
+        $pets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Format response with pagination
+        $response = [
+            'success' => true,
+            'pets' => $pets,
+            'pagination' => [
+                'currentPage' => $page,
+                'totalPages' => $totalPages,
+                'totalRecords' => $totalRecords,
+                'limit' => $limit,
+                'hasNext' => $page < $totalPages,
+                'hasPrev' => $page > 1
+            ]
+        ];
     }
-    $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-    
-    $stmt->execute();
-    $pets = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
-    // Format response
-    $response = [
-        'success' => true,
-        'pets' => $pets,
-        'pagination' => [
-            'currentPage' => $page,
-            'totalPages' => $totalPages,
-            'totalRecords' => $totalRecords,
-            'limit' => $limit,
-            'hasNext' => $page < $totalPages,
-            'hasPrev' => $page > 1
-        ]
-    ];
     
     echo json_encode($response);
     

@@ -1,235 +1,368 @@
-/* -- Reset & Global Styles -- */
+/* YouTube Studio Dark Theme Dashboard Styles */
 :root {
-    --primary-color: #4A90E2;
-    --success-color: #28a745;
-    --danger-color: #dc3545;
-    --light-gray: #f4f7fa;
-    --dark-gray: #6c757d;
-    --text-color: #333;
-    --border-color: #e9ecef;
-    --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --youtube-bg-primary: #212121;
+    --youtube-bg-secondary: #282828;
+    --youtube-bg-hover: #323232;
+    --youtube-border: #404040;
+    --youtube-border-hover: #606060;
+    --youtube-text-primary: #ffffff;
+    --youtube-text-secondary: #aaaaaa;
+    --youtube-accent: #065fd4;
+    --youtube-success: #00b894;
+    --youtube-danger: #ff6b6b;
+    --youtube-warning: #fdcb6e;
 }
 
-/* Dashboard specific font styling */
-.dashboard-container, 
-.dashboard-container * {
-    font-family: var(--font-primary);
-}
-
-body {
-    font-family: var(--font-primary);
-    background-color: var(--light-gray);
-    color: var(--text-color);
-    margin: 0;
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-    text-decoration: none;
-    color: var(--primary-color);
-}
-
-/* -- Layout -- */
+/* Dashboard Layout */
 .dashboard-container {
-    display: block;
+    display: flex;
     min-height: 100vh;
+    background-color: var(--youtube-bg-primary);
+    color: var(--youtube-text-primary);
 }
 
 .main-content {
+    flex: 1;
     margin-left: 280px;
-    margin-top: var(--top-header-height);
-    background: var(--color-primary);
+    background-color: var(--youtube-bg-primary);
     min-height: calc(100vh - var(--top-header-height));
-    padding: 2rem;
+    padding: 24px;
     transition: margin-left 0.3s ease;
 }
 
+/* Section Styling */
 .section {
-    background-color: #ffffff;
-    padding: 1.5rem;
-    margin-bottom: 2rem;
+    background-color: var(--youtube-bg-secondary);
+    border: 2px dashed var(--youtube-border);
     border-radius: 12px;
-    box-shadow: var(--shadow);
-    border-radius: 100px;
+    padding: 24px;
+    margin-bottom: 24px;
 }
 
-.section-title, .chart-title {
-    margin-top: 0;
-    margin-bottom: 1.5rem;
-    font-size: 1.5rem;
+.section-title {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.section-title-text {
+    color: var(--youtube-text-primary);
+    font-size: 20px;
     font-weight: 600;
-    color: var(--text-color);
-    font-family: var(--font-primary);
-    letter-spacing: -0.02em;
+    margin: 0;
 }
 
-.chart-title {
-    font-size: 1.2rem;
-    color: var(--dark-gray);
-    margin-top: 2rem;
-    font-family: var(--font-primary);
-    font-weight: 500;
+/* Stats Grid - Horizontal Scroll */
+.stats-grid {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding: 8px 0;
+    scroll-behavior: smooth;
 }
 
-/* -- Grids for Stats & Shortcuts -- */
-.stats-grid, .shortcuts-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 1.5rem;
+/* Custom Scrollbar for YouTube Studio Look */
+.stats-grid::-webkit-scrollbar {
+    height: 6px;
 }
 
-/* -- Stat Cards -- */
+.stats-grid::-webkit-scrollbar-track {
+    background: var(--youtube-bg-primary);
+    border-radius: 3px;
+}
+
+.stats-grid::-webkit-scrollbar-thumb {
+    background: var(--youtube-border);
+    border-radius: 3px;
+}
+
+.stats-grid::-webkit-scrollbar-thumb:hover {
+    background: var(--youtube-border-hover);
+}
+
+/* Stat Cards */
 .stat-card {
-    background-color: var(--light-gray);
-    padding: 1.5rem;
-    border-radius: 10px;
+    background-color: var(--youtube-bg-secondary);
+    border: 2px dashed var(--youtube-border);
+    border-radius: 8px;
+    padding: 20px;
     text-align: center;
-    border: 1px solid var(--border-color);
+    min-width: 140px;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.stat-card:hover {
+    border-color: var(--youtube-border-hover);
+    background-color: var(--youtube-bg-hover);
 }
 
 .stat-number {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: var(--primary-color);
-    font-family: var(--font-primary);
-    letter-spacing: -0.02em;
+    font-size: 28px;
+    font-weight: bold;
+    color: var(--youtube-text-primary);
+    margin-bottom: 8px;
 }
 
 .stat-label {
-    font-size: 0.9rem;
-    color: var(--dark-gray);
+    color: var(--youtube-text-secondary);
+    font-size: 14px;
     font-weight: 500;
-    font-family: var(--font-primary);
 }
 
-.text-success { color: var(--success-color); }
-.text-danger { color: var(--danger-color); }
-
-/* Category-specific stat cards */
-.stat-card.category-dog, .category-cat, .category-bird, .category-fish {
-    color: white;
-    border: none;
+/* Color variants for success and danger */
+.text-success {
+    color: var(--youtube-success) !important;
 }
-.stat-card.category-dog .stat-number, .stat-card.category-dog .stat-label { color: white; }
-.stat-card.category-cat .stat-number, .stat-card.category-cat .stat-label { color: white; }
-.stat-card.category-bird .stat-number, .stat-card.category-bird .stat-label { color: white; }
-.stat-card.category-fish .stat-number, .stat-card.category-fish .stat-label { color: white; }
 
-.category-dog { background: linear-gradient(135deg, #ff9a9e, #fecfef); }
-.category-cat { background: linear-gradient(135deg, #a18cd1, #fbc2eb); }
-.category-bird { background: linear-gradient(135deg, #ffecd2, #fcb69f); }
-.category-fish { background: linear-gradient(135deg, #a8edea, #fed6e3); }
+.text-danger {
+    color: var(--youtube-danger) !important;
+}
 
+.text-warning {
+    color: var(--youtube-warning) !important;
+}
 
-/* -- Schedule Card -- */
+.text-secondary {
+    color: var(--youtube-text-secondary) !important;
+}
+
+/* Chart Title */
+.chart-title {
+    color: var(--youtube-text-primary);
+    font-size: 18px;
+    font-weight: 600;
+    margin: 24px 0 16px 0;
+    grid-column: 1 / -1;
+}
+
+/* Category specific stat cards */
+.category-dog { border-color: #ff9800; }
+.category-cat { border-color: #e91e63; }
+.category-bird { border-color: #2196f3; }
+.category-fish { border-color: #00bcd4; }
+
+.category-dog:hover { border-color: #ffb74d; }
+.category-cat:hover { border-color: #f06292; }
+.category-bird:hover { border-color: #64b5f6; }
+.category-fish:hover { border-color: #4dd0e1; }
+
+/* Dynamic pet type stat cards with enhanced hover effects */
+.stat-card[style*="border-color"]:hover {
+    filter: brightness(1.2);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Schedule Card */
 .schedule-card {
+    background-color: var(--youtube-bg-secondary);
+    border: 2px dashed var(--youtube-border);
+    border-radius: 12px;
+    padding: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: var(--primary-color);
-    color: white;
-    padding: 1.5rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+    margin-bottom: 16px;
 }
 
-.schedule-card h3 {
-    margin: 0 0 0.5rem 0;
-    font-size: 1.4rem;
+.schedule-info h3 {
+    color: var(--youtube-text-primary);
+    margin: 0 0 8px 0;
+    font-size: 16px;
+    font-weight: 600;
 }
 
 .schedule-time {
-    font-size: 1rem;
-    opacity: 0.9;
+    color: var(--youtube-text-secondary);
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
 }
 
 .schedule-time span {
-    font-style: italic;
-    opacity: 0.8;
+    color: var(--youtube-warning);
+    font-weight: 500;
 }
 
-/* -- Buttons -- */
-.btn {
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: 8px;
-    font-size: 0.9rem;
+.schedule-status {
+    font-size: 12px;
     font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.text-warning {
+    color: var(--youtube-warning) !important;
+}
+
+/* No Schedule Card */
+.no-schedule-card {
+    background-color: var(--youtube-bg-secondary);
+    border: 2px dashed var(--youtube-border);
+    border-radius: 12px;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.no-schedule-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.6;
+}
+
+.no-schedule-text {
+    color: var(--youtube-text-primary);
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.no-schedule-desc {
+    color: var(--youtube-text-secondary);
+    font-size: 14px;
+    margin-bottom: 20px;
+    line-height: 1.4;
+}
+
+.btn-primary {
+    background-color: var(--youtube-accent);
+    color: white;
+    border-color: var(--youtube-accent);
+}
+
+.btn-primary:hover {
+    background-color: #0552c7;
+    border-color: #0552c7;
+}
+
+/* Buttons */
+.btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
+    border: 2px dashed transparent;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .btn-complete {
-    background-color: #ffffff;
-    color: var(--primary-color);
+    background-color: var(--youtube-success);
+    color: white;
+    border-color: var(--youtube-success);
 }
 
 .btn-complete:hover {
-    background-color: #f0f0f0;
-    transform: translateY(-2px);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    background-color: #00a085;
+    border-color: #00a085;
 }
 
-/* -- Shortcut Cards -- */
+/* Shortcuts Grid */
+.shortcuts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+}
+
 .shortcut-card {
-    background-color: var(--light-gray);
-    padding: 1.5rem;
-    border-radius: 10px;
-    text-align: center;
-    border: 1px solid var(--border-color);
+    background-color: var(--youtube-bg-secondary);
+    border: 2px dashed var(--youtube-border);
+    border-radius: 12px;
+    padding: 20px;
+    text-decoration: none;
+    color: var(--youtube-text-primary);
     transition: all 0.2s ease;
+    display: block;
 }
 
 .shortcut-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow);
-    border-color: var(--primary-color);
+    border-color: var(--youtube-border-hover);
+    background-color: var(--youtube-bg-hover);
+    color: var(--youtube-text-primary);
+    transform: translateY(-2px);
 }
 
 .shortcut-icon {
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
+    font-size: 32px;
+    margin-bottom: 12px;
+    display: block;
 }
 
 .shortcut-title {
-    font-size: 1.1rem;
+    font-size: 16px;
     font-weight: 600;
-    color: var(--text-color);
+    margin-bottom: 8px;
+    color: var(--youtube-text-primary);
 }
 
 .shortcut-desc {
-    font-size: 0.85rem;
-    color: var(--dark-gray);
+    font-size: 14px;
+    color: var(--youtube-text-secondary);
+    line-height: 1.4;
 }
 
-/* Mobile Responsive */
+/* Horizontal Scroll JavaScript Enhancement */
+.stats-grid.horizontal-scroll {
+    cursor: grab;
+}
+
+.stats-grid.horizontal-scroll:active {
+    cursor: grabbing;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
     .main-content {
         margin-left: 0;
+        padding: 16px;
     }
     
-    .stats-grid, .shortcuts-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
+    .stats-grid {
+        gap: 12px;
     }
     
-    .section {
-        padding: 1rem;
-        margin-bottom: 1.5rem;
+    .stat-card {
+        min-width: 120px;
+        padding: 16px;
+    }
+    
+    .stat-number {
+        font-size: 24px;
+    }
+    
+    .shortcuts-grid {
+        grid-template-columns: 1fr;
     }
     
     .schedule-card {
         flex-direction: column;
+        gap: 16px;
+        text-align: center;
     }
     
-    .schedule-actions {
-        margin-top: 1rem;
-        width: 100%;
+    .no-schedule-card {
+        padding: 30px 16px;
     }
     
-    .btn {
-        width: 100%;
+    .no-schedule-icon {
+        font-size: 36px;
     }
+    
+    .no-schedule-text {
+        font-size: 16px;
+    }
+}
+
+/* Dark Theme Specific Adjustments */
+body {
+    background-color: var(--youtube-bg-primary);
+    color: var(--youtube-text-primary);
 }
