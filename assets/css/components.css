@@ -343,7 +343,9 @@
     width: 35px !important;
     height: 35px !important;
   }
-
+  .sidebar-bottom {
+    margin-bottom: 4vhgt;
+  }
   .sidebar {
     transform: translateX(100%);
     right: 0;

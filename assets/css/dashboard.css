@@ -326,6 +326,11 @@
     .main-content {
         margin-left: 0;
         padding: 16px;
+        max-width: 100%;
+        width: 100% !important;
+    }
+    .dashboard-cotainer {
+        width: 100vw;
     }
     
     .stats-grid {
