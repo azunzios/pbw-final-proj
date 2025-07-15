@@ -1,8 +1,8 @@
 <?php
 // Konfigurasi database
 define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', '');
+define('DB_USER', 'pbwuser');
+define('DB_PASS', 'passwordku');
 define('DB_NAME', 'petcare_pbw');
 
 // Fungsi koneksi database
