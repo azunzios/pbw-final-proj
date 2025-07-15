@@ -693,7 +693,7 @@
     
     /* Hilangkan margin kiri dan atur full width */
     .schedules-container .main-content {
-        margin: 3rem 0px 0px 0px;
+        margin: 0px 0px 0px 0px;
         width: 100%;
         height: 100vh;
         padding: 0;

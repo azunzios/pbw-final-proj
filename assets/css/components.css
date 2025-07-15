@@ -344,7 +344,7 @@
     height: 35px !important;
   }
   .sidebar-bottom {
-    margin-bottom: 4vhgt;
+    margin-bottom: 20vh;
   }
   .sidebar {
     transform: translateX(100%);
