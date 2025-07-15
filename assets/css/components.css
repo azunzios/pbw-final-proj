@@ -338,6 +338,12 @@
 }
 
 @media (max-width: 468px) {
+  body.sidebar-open, html.sidebar-open {
+    overflow: hidden !important;
+    height: 100vh !important;
+    position: relative;
+  }
+  
   .hamburger {
     display: block;
     width: 35px !important;
@@ -350,7 +356,7 @@
     transform: translateX(100%);
     right: 0;
     left: auto;
-    overflow: hidden;
+    overflow: hidden !important;
   }
 
   .sidebar.active {

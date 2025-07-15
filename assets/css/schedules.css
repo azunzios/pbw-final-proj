@@ -765,7 +765,7 @@
     .schedule-manager {
         order: 2;
         border-radius: 8px;
-        margin-bottom: 2rem;
+        margin-bottom: 10vh;
         overflow: visible;
     }
     

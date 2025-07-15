@@ -1,32 +1,3 @@
-// Sidebar Toggle Functions
-function toggleSidebar() {
-    const sidebar = document.querySelector('.sidebar');
-    const overlay = document.querySelector('.sidebar-overlay');
-    const hamburger = document.querySelector('.hamburger');
-    
-    sidebar.classList.toggle('active');
-    overlay.classList.toggle('active');
-    hamburger.classList.toggle('active');
-}
-
-function closeSidebar() {
-    const sidebar = document.querySelector('.sidebar');
-    const overlay = document.querySelector('.sidebar-overlay');
-    const hamburger = document.querySelector('.hamburger');
-    
-    sidebar.classList.remove('active');
-    overlay.classList.remove('active');
-    hamburger.classList.remove('active');
-}
-
-// Fungsi untuk logout
-function logout() {
-    if (confirm('Apakah Anda yakin ingin keluar?')) {
-        window.location.href = 'auth/logout.php';
-    }
-}
-
-// Fungsi untuk login
 function handleLogin(event) {
     event.preventDefault();
     
@@ -173,7 +144,8 @@ function toggleSidebar() {
     const sidebar = document.querySelector('.sidebar');
     const overlay = document.querySelector('.sidebar-overlay');
     const hamburger = document.querySelector('.hamburger');
-    
+
+    document.body.classList.toggle('sidebar-open');
     sidebar.classList.toggle('active');
     overlay.classList.toggle('active');
     hamburger.classList.toggle('active');
@@ -237,10 +209,4 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Update greeting setiap menit
     setInterval(updateGreeting, 60000);
-    
-    // Event listener untuk overlay sidebar
-    const overlay = document.querySelector('.sidebar-overlay');
-    if (overlay) {
-        overlay.addEventListener('click', closeSidebar);
-    }
 });
