@@ -199,7 +199,7 @@ try {
                 <div class="form-group">
                     <label for="petPhoto">Foto Peliharaan</label>
                     <div class="photo-upload">
-                        <input type="file" id="petPhoto" name="photo" accept="image/*" onchange="previewImage(this)">
+                        <input type="file" id="petPhoto" name="photo" accept="image/*">
                         <div class="photo-preview" id="photoPreview">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
