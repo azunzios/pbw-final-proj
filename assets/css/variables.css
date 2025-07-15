@@ -161,6 +161,9 @@ body {
     background-color: var(--secondary-lavender);
     color: var(--text-white);
     font-family: 'DM Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .btn-primary:hover {

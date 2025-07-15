@@ -66,13 +66,7 @@ try {
         'Asia/Makassar' => 'Makassar (WITA)',
         'Asia/Jayapura' => 'Jayapura (WIT)',
         'Asia/Singapore' => 'Singapore',
-        'Asia/Kuala_Lumpur' => 'Kuala Lumpur',
         'Asia/Bangkok' => 'Bangkok',
-        'Asia/Tokyo' => 'Tokyo',
-        'Australia/Sydney' => 'Sydney',
-        'Europe/London' => 'London',
-        'America/New_York' => 'New York',
-        'America/Los_Angeles' => 'Los Angeles'
     ];
     
     echo json_encode([

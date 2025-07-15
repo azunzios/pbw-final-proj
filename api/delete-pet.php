@@ -55,34 +55,22 @@ try {
     $db->beginTransaction();
     
     try {
-        // Delete related records first (care logs, schedules, measurements)
-        // 1. Delete care logs
-        $deleteCareLogsQuery = "DELETE FROM care_logs WHERE pet_id = :pet_id";
-        $deleteCareLogsStmt = $db->prepare($deleteCareLogsQuery);
-        $deleteCareLogsStmt->bindParam(':pet_id', $pet_id, PDO::PARAM_INT);
-        $deleteCareLogsStmt->execute();
+        // Delete related records first (schedules and measurements)
+        // Note: No need to delete care_logs or schedule_instances since we removed those features
         
-        // 2. Delete schedule instances first (before deleting schedules)
-        $deleteScheduleInstancesQuery = "DELETE si FROM schedule_instances si 
-                                         INNER JOIN schedules s ON si.schedule_id = s.id 
-                                         WHERE s.pet_id = :pet_id";
-        $deleteScheduleInstancesStmt = $db->prepare($deleteScheduleInstancesQuery);
-        $deleteScheduleInstancesStmt->bindParam(':pet_id', $pet_id, PDO::PARAM_INT);
-        $deleteScheduleInstancesStmt->execute();
-        
-        // 3. Delete schedules
+        // 1. Delete schedules
         $deleteSchedulesQuery = "DELETE FROM schedules WHERE pet_id = :pet_id";
         $deleteSchedulesStmt = $db->prepare($deleteSchedulesQuery);
         $deleteSchedulesStmt->bindParam(':pet_id', $pet_id, PDO::PARAM_INT);
         $deleteSchedulesStmt->execute();
         
-        // 4. Delete measurements
+        // 2. Delete measurements
         $deleteMeasurementsQuery = "DELETE FROM pet_measurements WHERE pet_id = :pet_id";
         $deleteMeasurementsStmt = $db->prepare($deleteMeasurementsQuery);
         $deleteMeasurementsStmt->bindParam(':pet_id', $pet_id, PDO::PARAM_INT);
         $deleteMeasurementsStmt->execute();
         
-        // 5. Finally delete the pet
+        // 3. Finally delete the pet
         $deletePetQuery = "DELETE FROM pets WHERE id = :id AND user_id = :user_id";
         $deletePetStmt = $db->prepare($deletePetQuery);
         $deletePetStmt->bindParam(':id', $pet_id, PDO::PARAM_INT);

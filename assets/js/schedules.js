@@ -27,9 +27,6 @@ function setupEventListeners() {
 
     // Schedule form submission
     document.getElementById('scheduleForm').addEventListener('submit', handleScheduleSubmit);
-    
-    // Recurrence change handler
-    document.getElementById('recurrence').addEventListener('change', updateScheduleForm);
 
     // Modal close on outside click
     document.getElementById('scheduleModal').addEventListener('click', function(e) {
@@ -44,20 +41,17 @@ function initializeWeek() {
     // Set to start of current week (Monday)
     const today = new Date();
     const dayOfWeek = today.getDay();
-    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Handle Sunday
+    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
     currentWeekStart = new Date(today);
     currentWeekStart.setDate(today.getDate() + mondayOffset);
     
-    // We'll still keep Monday as the current week start internally
-    // but our updateWeekDisplay will handle Sunday properly
     updateWeekDisplay();
 }
 
 function goToToday() {
-    // Reset to the actual current week using a fresh date
     const today = new Date();
     const dayOfWeek = today.getDay();
-    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Handle Sunday
+    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
     currentWeekStart = new Date(today);
     currentWeekStart.setDate(today.getDate() + mondayOffset);
     
@@ -73,7 +67,6 @@ function navigateWeek(direction) {
 
 function updateWeekDisplay() {
     const weekTitle = document.getElementById('weekTitle');
-    // Minggu (Sunday) adalah satu hari sebelum Senin (Monday)
     const startDate = new Date(currentWeekStart);
     startDate.setDate(startDate.getDate() - 1); // Sunday
     const endDate = new Date(currentWeekStart);
@@ -89,17 +82,14 @@ function updateWeekDisplay() {
 
     // Get current date for comparison
     const today = new Date();
-    const todayString = today.toDateString();
 
     // Update day dates
     const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
     days.forEach((day, index) => {
-        // Untuk Sunday (Minggu), gunakan tanggal 1 hari sebelum currentWeekStart
         const date = new Date(currentWeekStart);
         if (day === 'sunday') {
-            date.setDate(date.getDate() - 1); // Sunday is 1 day before Monday
+            date.setDate(date.getDate() - 1);
         } else {
-            // Untuk hari-hari lainnya, index-1 karena kita mulai dari hari Minggu (index 0)
             date.setDate(date.getDate() + (index - 1));
         }
         
@@ -108,10 +98,7 @@ function updateWeekDisplay() {
             dateElement.textContent = date.getDate();
         }
 
-        // Debug logs
-        console.log(`${day}: ${date.toDateString()}, Today: ${todayString}, Match: ${date.toDateString() === todayString}`);
-
-        // Highlight today - compare year, month, and day
+        // Highlight today
         const dayColumn = document.querySelector(`[data-day="${day}"]`);
         if (date.getFullYear() === today.getFullYear() && 
             date.getMonth() === today.getMonth() && 
@@ -124,43 +111,53 @@ function updateWeekDisplay() {
 // Load schedules from API
 async function loadSchedules() {
     try {
-        // Ambil startDate sebagai hari Minggu (1 hari sebelum hari Senin)
-        const sundayStart = new Date(currentWeekStart);
-        sundayStart.setDate(sundayStart.getDate() - 1);
-        sundayStart.setHours(0, 0, 0, 0); // Set to beginning of day
-        const startDate = formatDate(sundayStart);
-        
-        // endDate tetap 6 hari dari Senin (yaitu Sabtu)
+        // Calculate week range
+        const startDate = new Date(currentWeekStart);
+        startDate.setDate(startDate.getDate() - 1); // Sunday start
         const endDate = new Date(currentWeekStart);
-        endDate.setDate(endDate.getDate() + 5); // 5 days after Monday = Saturday
-        endDate.setHours(23, 59, 59, 999); // Set to end of day
+        endDate.setDate(endDate.getDate() + 5); // Saturday end
+        
+        const startDateStr = formatDate(startDate);
         const endDateStr = formatDate(endDate);
-
-        const apiUrl = `api/get-schedules.php?start=${startDate}&end=${endDateStr}`;
         
-        // Use absolute URL to avoid any base URL issues
-        const absoluteUrl = getAbsoluteUrl(apiUrl);
+        const response = await fetch(getAbsoluteUrl(`api/get-schedules.php?start_date=${startDateStr}&end_date=${endDateStr}`));
         
-        const response = await fetch(absoluteUrl);
-        
-        // Cek apakah response OK
         if (!response.ok) {
-            throw new Error(`Server merespon dengan status ${response.status}: ${response.statusText}`);
+            throw new Error('Gagal memuat data jadwal');
         }
         
         const data = await response.json();
-
-        if (data.success) {
-            schedules = Array.isArray(data.schedules) ? data.schedules : [];
-            updateCalendarView();
-            updateScheduleList();
-        } else {
-            console.error('Failed to load schedules:', data.message);
-            showNotification(data.message || 'Gagal memuat data jadwal', 'error');
+        
+        if (!data.success) {
+            showNotification('Gagal memuat data jadwal', 'error');
+            return;
         }
+        
+        schedules = data.data.map(schedule => ({
+            ...schedule,
+            status: getScheduleStatus(schedule)
+        }));
+        
+        updateCalendarView();
+        updateScheduleList();
+        
     } catch (error) {
         console.error('Error loading schedules:', error);
         showNotification('Gagal memuat jadwal. Silakan coba lagi nanti.', 'error');
+    }
+}
+
+// Determine schedule status
+function getScheduleStatus(schedule) {
+    const now = new Date();
+    const scheduleDateTime = new Date(`${schedule.date} ${schedule.schedule_time}`);
+    
+    if (schedule.is_done == 1) {
+        return 'completed';
+    } else if (scheduleDateTime < now) {
+        return 'missed';
+    } else {
+        return 'upcoming';
     }
 }
 
@@ -182,14 +179,14 @@ function updateCalendarView() {
         
         let dayName;
         switch(dayOfWeek) {
-            case 0: dayName = 'sunday'; break;  // Added Sunday
+            case 0: dayName = 'sunday'; break;
             case 1: dayName = 'monday'; break;
             case 2: dayName = 'tuesday'; break;
             case 3: dayName = 'wednesday'; break;
             case 4: dayName = 'thursday'; break;
             case 5: dayName = 'friday'; break;
             case 6: dayName = 'saturday'; break;
-            default: return; // Should never happen
+            default: return;
         }
 
         const container = document.getElementById(`${dayName}-schedules`);
@@ -202,33 +199,14 @@ function updateCalendarView() {
 // Create schedule card for calendar
 function createScheduleCard(schedule) {
     const card = document.createElement('div');
-    
-    // Add status class (completed, missed, or upcoming)
-    let statusClass = schedule.status;
-    
-    // Add recurrence type class for color coding
-    let recurrenceClass = '';
-    switch(schedule.recurrence) {
-        case 'Once': recurrenceClass = 'once'; break;
-        case 'Daily': recurrenceClass = 'daily'; break;
-        case 'Weekly': recurrenceClass = 'weekly'; break;
-        case 'Monthly': recurrenceClass = 'monthly'; break;
-    }
-    
-    // Debug info for this schedule
-    console.log(`Creating card for schedule ID ${schedule.id}, date: ${schedule.date}, type: ${schedule.care_type}, recurrence: ${schedule.recurrence}`);
-    
-    card.className = `schedule-card ${statusClass} ${recurrenceClass}`;
+    card.className = `schedule-card ${schedule.status}`;
     card.onclick = () => editSchedule(schedule.id);
-
+    
     card.innerHTML = `
         <div class="schedule-time">${formatTime(schedule.schedule_time)}</div>
         <div class="schedule-type">${schedule.care_type}</div>
-        <div class="schedule-pet">🐾 ${schedule.pet_name}</div>
-        <div class="schedule-label">${schedule.recurrence}</div>
-        <div class="schedule-status ${schedule.status}"></div>
+        <div class="schedule-pet">${schedule.pet_name}</div>
     `;
-
     return card;
 }
 
@@ -249,17 +227,11 @@ function updateScheduleList() {
         }
     });
 
-    // Sort by date and time for upcoming, by completion time for completed
+    // Sort by date and time
     filteredSchedules.sort((a, b) => {
-        if (currentFilter === 'completed') {
-            // Sort completed by done_at time (most recent first)
-            return new Date(b.done_at || 0) - new Date(a.done_at || 0);
-        } else {
-            // Sort others by scheduled time
-            const dateTimeA = new Date(`${a.date} ${a.schedule_time}`);
-            const dateTimeB = new Date(`${b.date} ${b.schedule_time}`);
-            return dateTimeA - dateTimeB;
-        }
+        const dateTimeA = new Date(`${a.date} ${a.schedule_time}`);
+        const dateTimeB = new Date(`${b.date} ${b.schedule_time}`);
+        return dateTimeA - dateTimeB;
     });
 
     if (filteredSchedules.length === 0) {
@@ -303,13 +275,15 @@ function createScheduleListItem(schedule) {
                     <div class="schedule-item-time">${dateText} • ${formatTime(schedule.schedule_time)}</div>
                 </div>
                 <div class="schedule-item-actions" onclick="event.stopPropagation()">
-                    ${schedule.status === 'upcoming' ? `<button class="btn-small btn-complete" onclick="completeSchedule(${schedule.instance_id})">Selesai</button>` : ''}
+                    ${schedule.status === 'upcoming' ? 
+                        `<button class="btn-small btn-complete" onclick="completeSchedule(${schedule.id})">Selesai</button>` : ''
+                    }
                     <button class="btn-small btn-edit" onclick="editSchedule(${schedule.id})">Edit</button>
                     <button class="btn-small btn-delete" onclick="deleteSchedule(${schedule.id})">Hapus</button>
                 </div>
             </div>
             <div class="schedule-item-pet">🐾 ${schedule.pet_name}</div>
-            ${schedule.notes ? `<div class="schedule-item-notes">${schedule.notes}</div>` : ''}
+            ${schedule.description ? `<div class="schedule-item-notes">${schedule.description}</div>` : ''}
         </div>
     `;
 }
@@ -352,14 +326,8 @@ function openScheduleModal(scheduleId = null) {
         
         // Set default date to today
         const today = new Date();
-        document.getElementById('scheduleDate').value = formatDate(today);
-        
-        // Default ke sekali
-        document.getElementById('recurrence').value = 'Once';
+        document.getElementById('start_date').value = formatDate(today);
     }
-    
-    // Update form berdasarkan jenis pengulangan yang dipilih
-    updateScheduleForm();
     
     modal.classList.add('show');
     document.body.style.overflow = 'hidden';
@@ -376,22 +344,6 @@ async function handleScheduleSubmit(e) {
     e.preventDefault();
     
     const formData = new FormData(e.target);
-    const scheduleId = formData.get('scheduleId');
-    const recurrence = formData.get('recurrence');
-    
-    // Validasi berdasarkan jenis pengulangan
-    if (recurrence === 'Weekly') {
-        // Periksa apakah setidaknya satu hari dipilih untuk pengulangan mingguan
-        const checkedDays = document.querySelectorAll('input[name="days[]"]:checked');
-        if (checkedDays.length === 0) {
-            showNotification('Pilih setidaknya satu hari untuk pengulangan mingguan', 'error');
-            return;
-        }
-        
-        // Kumpulkan hari-hari yang dipilih
-        const selectedDays = Array.from(checkedDays).map(cb => cb.value);
-        formData.set('days', selectedDays.join(','));
-    }
     
     try {
         const response = await fetch(getAbsoluteUrl('api/save-schedule.php'), {
@@ -423,25 +375,11 @@ async function loadScheduleData(scheduleId) {
             const schedule = data.schedule;
             
             document.getElementById('scheduleId').value = schedule.id;
-            document.getElementById('petSelect').value = schedule.pet_id;
-            document.getElementById('careType').value = schedule.care_type;
-            document.getElementById('scheduleTime').value = schedule.schedule_time;
-            document.getElementById('scheduleDate').value = schedule.date;
-            document.getElementById('recurrence').value = schedule.recurrence || 'Once';
-            document.getElementById('notes').value = schedule.notes || '';
-            
-            // Update form berdasarkan jenis pengulangan
-            updateScheduleForm();
-            
-            // Jika pengulangan mingguan, cek hari-hari yang sesuai
-            if (schedule.recurrence === 'Weekly' && schedule.days) {
-                const days = schedule.days.split(',').map(day => day.trim());
-                document.querySelectorAll('input[name="days[]"]').forEach(checkbox => {
-                    if (days.includes(checkbox.value)) {
-                        checkbox.checked = true;
-                    }
-                });
-            }
+            document.getElementById('pet_id').value = schedule.pet_id;
+            document.getElementById('care_type').value = schedule.care_type;
+            document.getElementById('schedule_time').value = schedule.schedule_time;
+            document.getElementById('start_date').value = schedule.date;
+            document.getElementById('description').value = schedule.description || '';
         } else {
             showNotification('Gagal memuat data jadwal', 'error');
         }
@@ -483,14 +421,14 @@ async function deleteSchedule(scheduleId) {
     }
 }
 
-async function completeSchedule(instanceId) {
+async function completeSchedule(scheduleId) {
     try {
         const response = await fetch(getAbsoluteUrl('api/complete-schedule.php'), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ instance_id: instanceId })
+            body: JSON.stringify({ schedule_id: scheduleId })
         });
         
         const data = await response.json();
@@ -509,39 +447,41 @@ async function completeSchedule(instanceId) {
 
 // Utility functions
 function formatDate(date) {
-    // Format date in YYYY-MM-DD format for Asia/Jakarta timezone
-    const offset = 7 * 60; // UTC+7 for Asia/Jakarta in minutes
-    const localTime = new Date(date.getTime() + offset * 60000);
-    return localTime.toISOString().split('T')[0];
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
 }
 
 function formatTime(timeString) {
-    return timeString.substring(0, 5); // HH:MM format
+    if (timeString.includes(' ')) {
+        const timePart = timeString.split(' ')[1];
+        return timePart.substring(0, 5);
+    } else {
+        return timeString.substring(0, 5);
+    }
 }
 
 function showNotification(message, type = 'info') {
-    // Remove existing notifications
     const existingNotifications = document.querySelectorAll('.notification');
     existingNotifications.forEach(notification => {
         notification.remove();
     });
 
-    // Create notification element
     const notification = document.createElement('div');
     notification.className = `notification ${type}`;
     notification.textContent = message;
     
-    // Style the notification
     Object.assign(notification.style, {
         position: 'fixed',
         top: '20px',
         right: '20px',
-        backgroundColor: type === 'success' ? 'var(--secondary-mint)' : 
-                        type === 'error' ? 'var(--secondary-coral)' : 'var(--primary-blue)',
+        backgroundColor: type === 'success' ? '#10b981' : 
+                        type === 'error' ? '#ef4444' : '#3b82f6',
         color: 'white',
         padding: '12px 20px',
         borderRadius: '8px',
-        boxShadow: 'var(--shadow-medium)',
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
         zIndex: '10000',
         opacity: '0',
         transform: 'translateX(100%)',
@@ -552,13 +492,11 @@ function showNotification(message, type = 'info') {
     
     document.body.appendChild(notification);
     
-    // Animate in
     setTimeout(() => {
         notification.style.opacity = '1';
         notification.style.transform = 'translateX(0)';
     }, 100);
     
-    // Remove after 4 seconds
     setTimeout(() => {
         notification.style.opacity = '0';
         notification.style.transform = 'translateX(100%)';
@@ -568,42 +506,4 @@ function showNotification(message, type = 'info') {
             }
         }, 300);
     }, 4000);
-}
-
-// Function to update form based on recurrence type
-function updateScheduleForm() {
-    const recurrence = document.getElementById('recurrence').value;
-    const daySelectionGroup = document.getElementById('daySelectionGroup');
-    const dateSelectorGroup = document.getElementById('dateSelectorGroup');
-    
-    // Reset checkboxes
-    document.querySelectorAll('input[name="days[]"]').forEach(checkbox => {
-        checkbox.checked = false;
-    });
-    
-    switch (recurrence) {
-        case 'Once':
-            // Sekali: Tampilkan tanggal, waktu
-            daySelectionGroup.style.display = 'none';
-            dateSelectorGroup.style.display = 'block';
-            break;
-            
-        case 'Daily':
-            // Harian: Hanya tampilkan waktu
-            daySelectionGroup.style.display = 'none';
-            dateSelectorGroup.style.display = 'none';
-            break;
-            
-        case 'Weekly':
-            // Mingguan: Tampilkan pilihan hari dan waktu
-            daySelectionGroup.style.display = 'block';
-            dateSelectorGroup.style.display = 'none';
-            break;
-            
-        case 'Monthly':
-            // Bulanan: Tampilkan tanggal dan waktu
-            daySelectionGroup.style.display = 'none';
-            dateSelectorGroup.style.display = 'block';
-            break;
-    }
 }

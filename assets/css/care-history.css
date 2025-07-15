@@ -1,0 +1,486 @@
+body {
+  color: white;
+}
+/* Layout untuk Care History Page */
+.care-history-container-main {
+  display: flex;
+  min-height: 100vh;
+  background: var(--bg-gray-dark);
+}
+
+.filter-select {
+  background-color: #303030;
+  color: white;
+}
+
+.main-content {
+  flex: 1;
+  margin-left: var(--sidebar-width);
+  padding: var(--spacing-xl);
+  background: var(--bg-gray-dark);
+}
+
+.page-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  height: auto;
+  max-height: none;
+}
+
+/* Page Header */
+.page-header {
+  margin-bottom: var(--spacing-xl);
+  text-align: center;
+}
+
+.page-header p {
+  font-size: var(--font-lg);
+}
+
+/* Filter Section */
+.filter-section {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+  flex-wrap: wrap;
+  background: #101010;
+  padding: var(--spacing-lg);
+  border-radius: 12px;
+  box-shadow: var(--shadow-light);
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  min-width: 200px;
+}
+
+.filter-group label {
+  font-weight: 600;
+  color: white;
+  font-size: var(--font-sm);
+}
+
+/* Care History Container (untuk Statistik dan Tabel) */
+.care-history-container {
+  background: #505050;
+  border-radius: 12px;
+  box-shadow: var(--shadow-light);
+  overflow: visible;
+  color: white;
+  max-height: none;
+}
+
+.care-history-header {
+  padding: var(--spacing-lg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+}
+
+.care-history-header h3 {
+  margin: 0;
+  color: white;
+}
+
+.history-stats {
+  display: flex;
+  gap: var(--spacing-lg);
+}
+
+.stat-item {
+  text-align: center;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: none;
+  border-radius: 8px;
+  min-width: 150px;
+}
+
+.stat-number {
+  display: block;
+  font-size: var(--font-xl);
+  font-weight: 700;
+  color: white;
+}
+
+.stat-label {
+  display: block;
+  font-size: var(--font-xs);
+  color: var(--text-medium);
+  margin-top: var(--spacing-xs);
+}
+
+.care-history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.care-history-table th {
+  padding: 1rem 1rem;
+  text-align: center;
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: #202020;
+}
+
+.care-history-table tbody tr {
+  border-bottom: 1px solid #303030;
+  background: #101010;
+  transition: background-color 0.2s ease;
+}
+
+.care-history-table td {
+  padding: 0 1rem;
+  vertical-align: middle;
+  color: white;
+}
+
+.care-history-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Pet cell */
+.pet-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pet-emoji {
+  font-size: 24px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: black;
+  border-radius: 50%;
+}
+
+.pet-name {
+  font-weight: 500;
+  font-size: 14px;
+}
+
+/* Care type cell */
+.care-type-badge {
+  padding: 2px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  /* Background dan color default, akan di-override oleh kelas spesifik */
+  background: var(--primary-blue);
+  color: white;
+  display: inline-block;
+}
+
+/* Description cell */
+.description {
+  color: white;
+  line-height: 1.4;
+  max-width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Status cell */
+.status-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 12px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.status-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-badge.status-completed {
+  background: rgba(76, 175, 80);
+  width: 100px;
+}
+
+.status-badge.status-missed {
+  background: rgba(244, 67, 54);
+  width: 100px;
+}
+
+.status-badge.status-upcoming {
+  background: rgba(255, 152, 0);
+  color: #ef6c00;
+  width: 100px;
+}
+
+.status-icon {
+  font-size: 14px;
+}
+
+.status-text {
+  font-weight: 500;
+}
+
+.care-type-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Specific Care Type Badges (penggunaan var()) */
+.care-type-badge.makan {
+  background: var(--primary-orange);
+}
+.care-type-badge.minum {
+  background: var(--primary-blue);
+}
+.care-type-badge.olahraga {
+  background: var(--secondary-teal);
+}
+.care-type-badge.grooming {
+  background: var(--primary-pink);
+}
+.care-type-badge.kesehatan {
+  background: var(--secondary-coral);
+}
+.care-type-badge.bermain {
+  background: var(--secondary-lavender);
+}
+.care-type-badge.default {
+  background: var(--text-medium);
+} /* Tambahan untuk default */
+
+.care-recurrence-info {
+  font-size: var(--font-xs);
+  color: var(--text-light);
+  font-style: italic;
+}
+
+/* Loading State */
+.loading-state {
+  padding: var(--spacing-xxl);
+  text-align: center;
+  color: var(--text-medium);
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--bg-gray-200);
+  border-top: 3px solid var(--primary-blue);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto var(--spacing-md);
+}
+
+tr {
+  height: 3rem;
+}
+td.care-type-cell {
+  height: 3rem;
+}
+td.status-cell {
+  height: 3rem;
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Empty State */
+.empty-state {
+  padding: var(--spacing-xxl);
+  text-align: center;
+  color: var(--text-medium);
+}
+
+.empty-state-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.empty-state-icon {
+  font-size: 3rem;
+  opacity: 0.6;
+}
+
+.empty-state h3 {
+  margin: 0;
+  color: var(--text-dark);
+  font-size: var(--font-lg);
+}
+
+.empty-state p {
+  margin: 0;
+  color: var(--text-medium);
+  font-size: var(--font-sm);
+}
+
+/* Notes for Care Item */
+.care-item-notes {
+  margin-top: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  background: var(--bg-gray-100);
+  border-radius: 6px;
+  font-size: var(--font-sm);
+  color: var(--text-dark);
+}
+
+@media (max-width: 480px) {
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+    padding: 0.5rem 0.5rem;
+    height: calc(100vh - 60px); /* Berikan tinggi tetap untuk scroll */
+    overflow-y: auto; /* Aktifkan scroll vertikal */
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .page-content {
+    width: 100%;
+    height: auto; /* Biarkan konten menentukan tinggi */
+    max-height: none;
+  }
+  
+  /* Container untuk tabel tanpa horizontal scroll */
+  .care-history-container {
+    background: #505050;
+    border-radius: 12px;
+    box-shadow: var(--shadow-light);
+    overflow: visible;
+    color: white;
+    max-height: none;
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .care-history-table {
+    font-size: 10px;
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    min-width: auto; /* Remove min-width constraint */
+  }
+  
+  .care-history-header {
+    flex-direction: column;
+    align-items: stretch;
+    padding: var(--spacing-md);
+  }
+  
+  .history-stats {
+    overflow-x: auto;
+    flex-wrap: wrap;
+    padding-bottom: var(--spacing-sm);
+    gap: var(--spacing-sm);
+    display: flex;
+    justify-content: space-evenly;
+  }
+
+  .care-history-table th,
+  .care-history-table td {
+    padding: 6px 2px;
+    font-size: 10px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .description {
+    max-width: none;
+    font-size: 9px;
+    line-height: 1.2;
+    word-break: break-word;
+  }
+
+  .status-badge {
+    padding: 2px 4px;
+    font-size: 8px;
+    border-radius: 8px;
+    display: flex;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis
+  }
+  
+  .filter-section {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+  }
+  
+  .filter-group {
+    min-width: 100%;
+  }
+  
+  .stat-item {
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+  
+  .pet-emoji {
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+  }
+  
+  .pet-name {
+    font-size: 9px;
+    line-height: 1.2;
+    word-break: break-word;
+  }
+  
+  .pet-info {
+    flex-direction: column;
+    gap: 2px;
+    align-items: center;
+    text-align: center;
+  }
+  tr{
+    height: 8rem !important;
+  }
+  /* Status badges yang lebih compact */
+  .status-badge.status-completed,
+  .status-badge.status-missed,
+  .status-badge.status-upcoming {
+    width: auto;
+    min-width: auto;
+    padding: 2px 4px;
+    font-size: 8px;
+  }
+  
+  /* Table headers juga lebih kecil */
+  .care-history-table th {
+    font-size: 9px;
+    padding: 6px 2px;
+    line-height: 1.2;
+  }
+  
+  /* Pastikan row memiliki tinggi yang fleksibel */
+  tr {
+    height: auto;
+    min-height: 2.5rem;
+  }
+}

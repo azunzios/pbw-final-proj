@@ -65,10 +65,6 @@ try {
     
     $user_id = $pdo->lastInsertId();
     
-    // Insert default user settings
-    $stmt = $pdo->prepare("INSERT INTO user_settings (user_id) VALUES (?)");
-    $stmt->execute([$user_id]);
-    
     echo json_encode(['success' => true, 'message' => 'Akun berhasil dibuat. Silakan login.']);
     
 } catch (Exception $e) {

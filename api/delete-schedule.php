@@ -37,17 +37,17 @@ try {
         exit;
     }
 
-    // Hapus schedule instances terlebih dahulu (karena foreign key constraint)
-    $stmt = $pdo->prepare("DELETE FROM schedule_instances WHERE schedule_id = ?");
-    $stmt->execute([$scheduleId]);
-
-    // Hapus jadwal
+    // Hapus jadwal (simplified, no schedule_instances to worry about)
     $stmt = $pdo->prepare("DELETE FROM schedules WHERE id = ? AND user_id = ?");
     $stmt->execute([$scheduleId, $userId]);
 
     echo json_encode(['success' => true, 'message' => 'Jadwal berhasil dihapus']);
 
 } catch (Exception $e) {
+    error_log("Error in delete-schedule.php: " . $e->getMessage());
+    echo json_encode(['success' => false, 'message' => 'Terjadi kesalahan sistem']);
+}
+?>
     error_log("Error in delete-schedule.php: " . $e->getMessage());
     http_response_code(500);
     echo json_encode([

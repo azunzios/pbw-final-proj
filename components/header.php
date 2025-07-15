@@ -34,7 +34,7 @@ $userTimezone = getUserTimezone();
                                 echo "$dayName, $day $month";
                                 ?></span>
             <span class="time"><?php
-                                echo $currentTime->format('g:i A');
+                                echo $currentTime->format('H:i');
                                 ?></span>
         </div>
     </div>

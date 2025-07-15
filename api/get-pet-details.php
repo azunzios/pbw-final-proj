@@ -37,20 +37,18 @@ try {
         exit;
     }
     
-    // Get care history from care_logs
+    // Get care history from completed schedules
     $careHistoryQuery = "
         SELECT 
-            cl.id,
-            cl.care_type,
-            cl.timestamp,
-            cl.notes,
-            cl.done_by,
-            s.schedule_time,
-            s.category
-        FROM care_logs cl
-        LEFT JOIN schedules s ON cl.schedule_id = s.id
-        WHERE cl.pet_id = :pet_id AND cl.user_id = :user_id
-        ORDER BY cl.timestamp DESC
+            s.id,
+            s.care_type,
+            s.start_date as timestamp,
+            s.description as notes,
+            'System' as done_by,
+            s.schedule_time
+        FROM schedules s
+        WHERE s.pet_id = :pet_id AND s.user_id = :user_id AND s.is_active = 0
+        ORDER BY s.start_date DESC, s.schedule_time DESC
         LIMIT 20
     ";
     
@@ -81,23 +79,22 @@ try {
     
     $measurements = $measurementStmt->fetchAll(PDO::FETCH_ASSOC);
     
-    // Get upcoming schedules
+    // Get upcoming schedules (simplified for once-only schedules)
     $scheduleQuery = "
         SELECT 
             s.id,
             s.care_type,
             s.schedule_time,
-            s.days,
-            s.recurrence,
-            s.category,
-            s.notes,
-            si.date as next_date,
-            si.is_done
+            s.start_date,
+            s.description,
+            CASE 
+                WHEN s.start_date < CURDATE() OR (s.start_date = CURDATE() AND s.schedule_time < CURTIME()) THEN 1
+                ELSE 0
+            END as is_done
         FROM schedules s
-        LEFT JOIN schedule_instances si ON s.id = si.schedule_id 
         WHERE s.pet_id = :pet_id AND s.user_id = :user_id AND s.is_active = 1
-        AND (si.date >= CURDATE() OR si.date IS NULL)
-        ORDER BY si.date ASC, s.schedule_time ASC
+        AND s.start_date >= CURDATE()
+        ORDER BY s.start_date ASC, s.schedule_time ASC
         LIMIT 5
     ";
     

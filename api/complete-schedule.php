@@ -12,10 +12,14 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$instance_id = intval($_POST['instance_id'] ?? 0);
+// Get JSON input
+$rawInput = file_get_contents('php://input');
+$input = json_decode($rawInput, true);
 
-if (!$instance_id) {
-    echo json_encode(['success' => false, 'message' => 'ID instance tidak valid']);
+$schedule_id = intval($input['schedule_id'] ?? 0);
+
+if (!$schedule_id) {
+    echo json_encode(['success' => false, 'message' => 'Data tidak lengkap. Perlu schedule_id']);
     exit;
 }
 
@@ -23,45 +27,30 @@ try {
     $pdo = connectDB();
     $user = getCurrentUser();
     
-    // Verifikasi bahwa schedule instance ini milik user yang login
-    $stmt = $pdo->prepare("SELECT si.*, s.user_id 
-                          FROM schedule_instances si 
-                          JOIN schedules s ON si.schedule_id = s.id 
-                          WHERE si.id = ?");
-    $stmt->execute([$instance_id]);
-    $instance = $stmt->fetch();
+    // Verifikasi schedule milik user
+    $stmt = $pdo->prepare("SELECT * FROM schedules WHERE id = ? AND user_id = ? AND is_active = 1");
+    $stmt->execute([$schedule_id, $user['id']]);
+    $schedule = $stmt->fetch();
     
-    if (!$instance) {
-        echo json_encode(['success' => false, 'message' => 'Jadwal tidak ditemukan']);
+    if (!$schedule) {
+        echo json_encode(['success' => false, 'message' => 'Jadwal tidak ditemukan atau tidak valid']);
         exit;
     }
     
-    if ($instance['user_id'] != $user['id']) {
-        echo json_encode(['success' => false, 'message' => 'Tidak memiliki akses']);
+    // Check if already completed
+    if ($schedule['completed_at']) {
+        echo json_encode(['success' => false, 'message' => 'Jadwal sudah diselesaikan sebelumnya']);
         exit;
     }
     
-    if ($instance['is_done']) {
-        echo json_encode(['success' => false, 'message' => 'Jadwal sudah selesai']);
-        exit;
-    }
-    
-    // Update schedule instance
-    $stmt = $pdo->prepare("UPDATE schedule_instances 
-                          SET is_done = 1, done_at = NOW() 
-                          WHERE id = ?");
-    $stmt->execute([$instance_id]);
-    
-    // Tambah ke care logs
-    $stmt = $pdo->prepare("INSERT INTO care_logs (user_id, pet_id, schedule_id, care_type, done_by) 
-                          SELECT s.user_id, s.pet_id, s.id, s.care_type, ? 
-                          FROM schedules s 
-                          WHERE s.id = ?");
-    $stmt->execute([$user['full_name'], $instance['schedule_id']]);
+    // Mark as completed by adding completed timestamp
+    $stmt = $pdo->prepare("UPDATE schedules SET completed_at = NOW() WHERE id = ?");
+    $stmt->execute([$schedule_id]);
     
     echo json_encode(['success' => true, 'message' => 'Jadwal berhasil diselesaikan']);
     
 } catch (Exception $e) {
+    error_log("Error in complete-schedule.php: " . $e->getMessage());
     echo json_encode(['success' => false, 'message' => 'Terjadi kesalahan sistem']);
 }
 ?>

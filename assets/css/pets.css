@@ -946,6 +946,12 @@
 
 /* Mobile Responsive */
 @media (max-width: 468px) {
+    /* Remove left margin for main content on mobile */
+    .pets-container .main-content {
+        margin-left: 0;
+        width: 100%;
+    }
+    
     .actions-bar {
         flex-direction: column;
         align-items: stretch;

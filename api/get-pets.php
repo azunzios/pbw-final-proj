@@ -1,23 +1,19 @@
 <?php
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
-
+require_once '../includes/auth.php';
 require_once '../config/database.php';
 
-// Check authentication
-if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => false, 'message' => 'User tidak terautentikasi']);
+// Check authentication for API (tidak melakukan redirect)
+if (!checkApiAuth()) {
+    http_response_code(401);
+    echo json_encode(['success' => false, 'message' => 'Unauthorized']);
     exit;
 }
 
 try {
-    $db = connectDB();
-    $user_id = $_SESSION['user_id'];
+    $pdo = connectDB();
+    $user = getCurrentUser();
+    $userId = $user['id'];
     
     // Get parameters
     $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
@@ -31,8 +27,8 @@ try {
     // If requesting stats only
     if ($stats) {
         $countQuery = "SELECT COUNT(*) as total FROM pets WHERE user_id = :user_id";
-        $countStmt = $db->prepare($countQuery);
-        $countStmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+        $countStmt = $pdo->prepare($countQuery);
+        $countStmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
         $countStmt->execute();
         $count = $countStmt->fetch(PDO::FETCH_ASSOC);
         
@@ -48,9 +44,9 @@ try {
     // If requesting single pet
     if ($id) {
         $query = "SELECT * FROM pets WHERE id = :id AND user_id = :user_id";
-        $stmt = $db->prepare($query);
+        $stmt = $pdo->prepare($query);
         $stmt->bindParam(':id', $id);
-        $stmt->bindParam(':user_id', $user_id);
+        $stmt->bindParam(':user_id', $userId);
         $stmt->execute();
         
         $pet = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -71,7 +67,7 @@ try {
     
     // Build search query
     $whereClause = 'WHERE user_id = :user_id';
-    $params = [':user_id' => $user_id];
+    $params = [':user_id' => $userId];
     
     if (!empty($search)) {
         $whereClause .= " AND (name LIKE :search OR type LIKE :search)";
@@ -80,7 +76,7 @@ try {
     
     // Get total count for pagination
     $countQuery = "SELECT COUNT(*) as total FROM pets $whereClause";
-    $countStmt = $db->prepare($countQuery);
+    $countStmt = $pdo->prepare($countQuery);
     foreach ($params as $key => $value) {
         $countStmt->bindValue($key, $value);
     }
@@ -92,7 +88,7 @@ try {
     if ($all) {
         // Get all pets without pagination
         $query = "SELECT * FROM pets $whereClause ORDER BY created_at DESC";
-        $stmt = $db->prepare($query);
+        $stmt = $pdo->prepare($query);
         
         foreach ($params as $key => $value) {
             $stmt->bindValue($key, $value);
@@ -110,7 +106,7 @@ try {
     } else {
         // Get pets with pagination
         $query = "SELECT * FROM pets $whereClause ORDER BY created_at DESC LIMIT :limit OFFSET :offset";
-        $stmt = $db->prepare($query);
+        $stmt = $pdo->prepare($query);
         
         foreach ($params as $key => $value) {
             $stmt->bindValue($key, $value);

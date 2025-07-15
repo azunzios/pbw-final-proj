@@ -142,8 +142,8 @@ try {
                 <input type="hidden" id="scheduleId" name="scheduleId">
 
                 <div class="form-group">
-                    <label for="petSelect">Peliharaan</label>
-                    <select id="petSelect" name="pet_id" required>
+                    <label for="pet_id">Peliharaan</label>
+                    <select id="pet_id" name="pet_id" required>
                         <option value="">Pilih peliharaan...</option>
                         <?php foreach ($pets as $pet): ?>
                             <option value="<?= $pet['id'] ?>"><?= htmlspecialchars($pet['name']) ?></option>
@@ -152,8 +152,8 @@ try {
                 </div>
 
                 <div class="form-group">
-                    <label for="careType">Jenis Perawatan</label>
-                    <select id="careType" name="care_type" required>
+                    <label for="care_type">Jenis Perawatan</label>
+                    <select id="care_type" name="care_type" required>
                         <option value="">Pilih jenis perawatan...</option>
                         <option value="Makan">Makan</option>
                         <option value="Minum">Minum</option>
@@ -168,41 +168,18 @@ try {
                 </div>
 
                 <div class="form-group">
-                    <label for="recurrence">Pengulangan</label>
-                    <select id="recurrence" name="recurrence" onchange="updateScheduleForm()">
-                        <option value="Once">Sekali</option>
-                        <option value="Daily">Harian</option>
-                        <option value="Weekly">Mingguan</option>
-                        <option value="Monthly">Bulanan</option>
-                    </select>
-                </div>
-                
-                <div class="form-group" id="daySelectionGroup" style="display:none;">
-                    <label>Pilih Hari</label>
-                    <div class="day-checkboxes">
-                        <label><input type="checkbox" name="days[]" value="Senin"> Senin</label>
-                        <label><input type="checkbox" name="days[]" value="Selasa"> Selasa</label>
-                        <label><input type="checkbox" name="days[]" value="Rabu"> Rabu</label>
-                        <label><input type="checkbox" name="days[]" value="Kamis"> Kamis</label>
-                        <label><input type="checkbox" name="days[]" value="Jumat"> Jumat</label>
-                        <label><input type="checkbox" name="days[]" value="Sabtu"> Sabtu</label>
-                        <label><input type="checkbox" name="days[]" value="Minggu"> Minggu</label>
-                    </div>
+                    <label for="schedule_time">Waktu</label>
+                    <input type="time" id="schedule_time" name="schedule_time" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="scheduleTime">Waktu</label>
-                    <input type="time" id="scheduleTime" name="schedule_time" required>
-                </div>
-
-                <div class="form-group" id="dateSelectorGroup">
-                    <label for="scheduleDate">Tanggal</label>
-                    <input type="date" id="scheduleDate" name="schedule_date" required>
+                    <label for="start_date">Tanggal</label>
+                    <input type="date" id="start_date" name="start_date" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="notes">Catatan</label>
-                    <textarea id="notes" name="notes" rows="3" placeholder="Catatan tambahan..."></textarea>
+                    <label for="description">Catatan</label>
+                    <textarea id="description" name="description" rows="3" placeholder="Catatan tambahan..."></textarea>
                 </div>
 
                 <div class="modal-actions">
@@ -214,6 +191,7 @@ try {
     </div>
 
     <script src="assets/js/schedules.js"></script>
+    <script src="assets/js/main.js"></script>
 </body>
 
 </html>

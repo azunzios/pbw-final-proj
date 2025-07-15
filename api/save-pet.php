@@ -94,8 +94,8 @@ try {
         }
         
         // Check file size (max 5MB)
-        if ($_FILES['photo']['size'] > 5 * 1024 * 1024) {
-            echo json_encode(['success' => false, 'message' => 'Ukuran file terlalu besar. Maksimal 5MB']);
+        if ($_FILES['photo']['size'] > 1.5 * 1024 * 1024) {
+            echo json_encode(['success' => false, 'message' => 'Ukuran file terlalu besar. Maksimal 1.5MB']);
             exit;
         }
         

@@ -104,6 +104,12 @@ $avatarColor = generateAvatarColor($user['full_name']);
                 <span>Pengukuran</span>
             </a>
         </li>
+        <li>
+            <a href="care-history.php" <?php echo $currentPage === 'care-history' ? 'class="active"' : ''; ?>>
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M480-80q-75 0-140.5-28.5t-114-77q-48.5-48.5-77-114T120-440q0-75 28.5-140.5t77-114q48.5-48.5 114-77T480-800q65 0 123 22.5T700-716v-84h80v200H580v-80h84q-35-33-80-51.5T480-720q-117 0-198.5 81.5T200-440q0 117 81.5 198.5T480-160q105 0 183.5-68T756-400h82q-15 137-117.5 228.5T480-80Zm112-192L440-424v-216h80v184l128 128-56 56Z"/></svg>
+                <span>Riwayat Perawatan</span>
+            </a>
+        </li>
     </ul>
     
     <div class="sidebar-bottom">

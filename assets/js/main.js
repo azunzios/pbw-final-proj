@@ -179,17 +179,6 @@ function toggleSidebar() {
     hamburger.classList.toggle('active');
 }
 
-// Fungsi untuk close sidebar mobile
-function closeSidebar() {
-    const sidebar = document.querySelector('.sidebar');
-    const overlay = document.querySelector('.sidebar-overlay');
-    const hamburger = document.querySelector('.hamburger');
-    
-    sidebar.classList.remove('active');
-    overlay.classList.remove('active');
-    hamburger.classList.remove('active');
-}
-
 // Fungsi untuk mendapatkan sapaan berdasarkan waktu
 function getGreeting() {
     const hour = new Date().getHours();
