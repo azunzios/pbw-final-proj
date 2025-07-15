@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-require_once '../config/database.php';
+require_once __DIR__.'/../config/database.php';
 
 // Check authentication
 if (!isset($_SESSION['user_id'])) {

@@ -1,7 +1,7 @@
 <?php
 header('Content-Type: application/json');
-require_once '../includes/auth.php';
-require_once '../config/database.php';
+require_once __DIR__.'/../includes/auth.php';
+require_once __DIR__.'/../config/database.php';
 
 // Check authentication untuk API
 if (!checkApiAuth()) {

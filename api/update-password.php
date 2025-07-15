@@ -1,7 +1,7 @@
 <?php
 header('Content-Type: application/json');
-require_once '../includes/auth.php';
-require_once '../config/database.php';
+require_once __DIR__.'/../includes/auth.php';
+require_once __DIR__.'/../config/database.php';
 
 // Set timezone from user preferences or default to Asia/Jakarta
 $timezone = $_SESSION['timezone'] ?? 'Asia/Jakarta';
