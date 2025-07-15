@@ -350,6 +350,7 @@
     transform: translateX(100%);
     right: 0;
     left: auto;
+    overflow: hidden;
   }
 
   .sidebar.active {
