@@ -1,6 +1,6 @@
 <?php
-require_once 'includes/auth.php';
-require_once 'config/database.php';
+require_once __DIR__.'/includes/auth.php';
+require_once __DIR__.'/config/database.php';
 
 // Redirect if not logged in
 if (!isset($_SESSION['user_id'])) {
