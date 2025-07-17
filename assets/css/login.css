@@ -8,7 +8,9 @@
 body.login-page {
     font-family: var(--font-primary) !important;
 }
-
+.login-subtitle-tester {
+    font-size: 1rem;
+}
 .login-container {
     height: 100vh;
     display: flex;

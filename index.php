@@ -95,6 +95,8 @@ if (isset($_SESSION['error'])) {
                     <img class="login-hi" src="assets/img/hi.svg" alt="Login Icon">
                     <h1 class="login-title">Selamat Datang</h1>
                     <p class="login-subtitle">Masuk ke akun Anda</p>
+                    <p class="login-subtitle-tester">Informasi akun tester: </p>
+                    <p class="login-subtitle-tester">username: test | password: test123</p>
                 </div>
 
                 <?php if ($error_message): ?>
